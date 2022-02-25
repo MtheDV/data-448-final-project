@@ -1,7 +1,14 @@
+import {Outlet} from 'react-router-dom';
+import {Header, SidebarNav, Footer} from '../components';
+
 function App() {
   return (
-    <div>
-    </div>
+    <>
+      <Header/>
+      <SidebarNav/>
+      <Outlet/>
+      <Footer/>
+    </>
   );
 }
 
