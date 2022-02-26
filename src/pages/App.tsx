@@ -1,14 +1,19 @@
 import {Outlet} from 'react-router-dom';
 import {Header, SidebarNav, Footer} from '../components';
+import AppStyles from '../styles/App.module.scss';
 
 function App() {
   return (
-    <>
-      <Header/>
+    <div className={AppStyles.app}>
       <SidebarNav/>
-      <Outlet/>
-      <Footer/>
-    </>
+      <div className={AppStyles.appContent}>
+        <Header/>
+        <main className={AppStyles.appContent_main}>
+          <Outlet/>
+        </main>
+        <Footer/>
+      </div>
+    </div>
   );
 }
 

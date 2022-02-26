@@ -1,8 +1,10 @@
+import SidebarNavStyles from './SidebarNav.module.scss';
+
 const SidebarNav = () => {
   return (
-    <div>
-    
-    </div>
+    <aside className={SidebarNavStyles.sidebarNav}>
+      Sidebar nav details
+    </aside>
   );
 };
 

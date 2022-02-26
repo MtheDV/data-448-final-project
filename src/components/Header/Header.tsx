@@ -1,8 +1,10 @@
+import HeaderStyles from './Header.module.scss';
+
 const Header = () => {
   return (
-    <div>
-    
-    </div>
+    <header className={HeaderStyles.header}>
+      Header Details
+    </header>
   );
 };
 
