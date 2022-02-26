@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
-import Footer from './Footer';
+import _404 from '../pages/_404';
 
 test('renders', () => {
-  render(<Footer />);
+  render(<_404 />);
 });

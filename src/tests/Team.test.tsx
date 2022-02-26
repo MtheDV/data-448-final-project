@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
-import Footer from './Footer';
+import Team from '../pages/Team';
 
 test('renders', () => {
-  render(<Footer />);
+  render(<Team />);
 });
