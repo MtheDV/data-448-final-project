@@ -4,4 +4,13 @@
   height: 100vh;
   width: 16rem;
   border-right: 1px solid $border;
+
+  &_nav {
+    &_active {
+      background-color: $nav-link-active;
+    }
+    &_inActive {
+      background-color: transparent;
+    }
+  }
 }
