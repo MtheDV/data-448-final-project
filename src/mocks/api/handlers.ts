@@ -39,3 +39,9 @@ export const handlers = [
     );
   })
 ];
+
+export const getTeamSetsError = rest.get(baseURL + '/api/team-sets', (req, res, context) => {
+  return res(
+    context.status(500)
+  );
+});
