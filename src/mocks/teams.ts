@@ -19,3 +19,5 @@ export const mockTeamSet: TeamSet = {
   id: 1,
   teams: [mockTeam1, mockTeam2]
 };
+
+export const mockTeamSets: Array<TeamSet> = [mockTeamSet];

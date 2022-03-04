@@ -1,8 +1,9 @@
 import {configureStore} from '@reduxjs/toolkit';
+import teamSetReducer from './slices/teamSetsSlice';
 
 const store = configureStore({
   reducer: {
-  
+    teamSets: teamSetReducer
   }
 });
 
