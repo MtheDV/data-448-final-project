@@ -9,7 +9,7 @@ import {Routing} from './routing';
 import {worker} from './mocks/api/browser';
 
 if (process.env.NODE_ENV === 'development') {
-  worker.start().then().catch();
+  worker.start({ onUnhandledRequest: 'bypass' }).then().catch();
 }
 
 ReactDOM.render(

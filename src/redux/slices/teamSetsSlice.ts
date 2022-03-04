@@ -1,7 +1,8 @@
 import {DefaultState, TeamSet} from '../../types';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AppDispatch, RootState} from '../store';
-import axios, {AxiosError, AxiosResponse} from 'axios';
+import {AxiosError, AxiosResponse} from 'axios';
+import axiosConfig from '../../api/axiosConfig';
 
 interface TeamSetsState extends DefaultState {
   teamSets: Array<TeamSet>,
@@ -51,7 +52,7 @@ export const selectTeamSets = (state: RootState) => state.teamSets;
 // Get team sets through API via a thunk
 export const getTeamSets = () => (dispatch: AppDispatch) => {
   dispatch(fetchBegin());
-  axios.get('/api/team-sets').then((res: AxiosResponse<{teamsSets: Array<TeamSet>}>) => {
+  axiosConfig.get('/api/team-sets').then((res: AxiosResponse<{teamsSets: Array<TeamSet>}>) => {
     dispatch(fetchSuccess(res.data.teamsSets));
   }).catch((err: AxiosError) => {
     dispatch(fetchError(err.message));

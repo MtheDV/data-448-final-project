@@ -17,6 +17,7 @@ export const mockTeam2: Team = {
 
 export const mockTeamSet: TeamSet = {
   id: 1,
+  name: 'Team Set 1',
   teams: [mockTeam1, mockTeam2]
 };
 
