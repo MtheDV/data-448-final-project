@@ -1,13 +1,7 @@
-import {Submission} from './grades';
+import {Enrollment} from './enrollments';
 
 export type Student = {
   id: number;
   name: string;
-  enrollments: Array<Enrollment>;
-}
-
-export type Enrollment = {
-  id: number;
-  student: Student;
-  submissions: Array<Submission>;
+  enrollments: Array<Enrollment>
 }
