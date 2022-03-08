@@ -19,8 +19,8 @@ const SidebarNav = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to={routes.teams} className={navLinkStyles}>
-              Teams
+            <NavLink to={routes.teamSets} className={navLinkStyles}>
+              Team Sets
             </NavLink>
           </li>
         </ul>
