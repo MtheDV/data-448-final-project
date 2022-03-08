@@ -10,7 +10,7 @@ const SidebarNav = () => {
   
   return (
     <aside className={SidebarNavStyles.sidebarNav}>
-      <h1>App</h1>
+      <span>App</span>
       <nav>
         <ul>
           <li>

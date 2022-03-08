@@ -1,13 +1,15 @@
 import {render} from '../utils';
-import Home from '../../pages/Home';
 import {screen} from '@testing-library/react';
+import Home from '../../pages/Home';
 
 describe('Home Page', () => {
   beforeEach(() => {
-    render(<Home />);
+    render(<Home/>, ['/']);
   });
   
   it('should render', () => {
-    expect(screen.getByText(/Home/i)).toBeInTheDocument();
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toBeInTheDocument();
+    expect(heading.innerHTML === 'Home').toBeTruthy();
   });
 });

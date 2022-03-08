@@ -1,6 +1,8 @@
 import {useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {fetchTeamSets, getTeamSets} from '../redux/slices/teamSetsSlice';
+import {routes} from '../routing';
+import {Link} from 'react-router-dom';
 
 const TeamSets = () => {
   const {teamSets, status, error} = useAppSelector(getTeamSets);
@@ -18,7 +20,7 @@ const TeamSets = () => {
       {status === 'loading' && <p>Loading...</p>}
       {status === 'error' && <p>Error! {error}</p>}
       {teamSets && teamSets.map((teamSet) =>
-        <p key={`team-set-${teamSet.id}`}>{teamSet.name}</p>
+        <Link key={`team-set-${teamSet.id}`} to={`${routes.teamSets}/${teamSet.id}`}>{teamSet.name}</Link>
       )}
       {teamSets.length <= 0 && <p>Looks like there are no team sets</p>}
     </div>

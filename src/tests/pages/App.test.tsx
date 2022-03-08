@@ -1,6 +1,6 @@
-import App from '../../pages/App';
 import {render} from '../utils';
+import {App} from '../../pages';
 
 test('renders', () => {
-  render(<App />);
+  render(<App/>, ['/']);
 });

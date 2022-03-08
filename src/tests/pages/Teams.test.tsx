@@ -1,6 +1,6 @@
-import Teams from '../../pages/Teams';
 import {render} from '../utils';
+import {Teams} from '../../pages';
 
 test('renders', () => {
-  render(<Teams/>);
+  render(<Teams/>, ['/team-sets/1/teams']);
 });

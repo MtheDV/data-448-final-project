@@ -1,31 +1,32 @@
-import {FC, ReactElement} from 'react';
+import {ReactElement, ReactNode} from 'react';
 import {render} from '@testing-library/react';
 import {RenderOptions} from '@testing-library/react';
-import {BrowserRouter} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import {configureStore} from '@reduxjs/toolkit';
-import teamSetReducer from '../redux/slices/teamSetsSlice';
+import {MemoryRouter} from 'react-router-dom';
+import {storeOptions} from '../redux/store';
 
-const AllTheProviders: FC = ({children}) => {
+const GlobalProvidersWrapper = ({children, initialRoutes}: { children?: ReactNode, initialRoutes: Array<string> }) => {
   return (
     <Provider
       store={
-        configureStore({
-          reducer: {
-            teamSets: teamSetReducer
-          }
-        })
+        configureStore(storeOptions)
       }
     >
-      <BrowserRouter>
+      <MemoryRouter initialEntries={initialRoutes}>
         {children}
-      </BrowserRouter>
+      </MemoryRouter>
     </Provider>
   );
 };
 
-const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
-  render(ui, {wrapper: AllTheProviders, ...options});
+const customRender = (ui: ReactElement, initialRoutes: Array<string> = ['/'], options?: Omit<RenderOptions, 'wrapper'>) =>
+  render(ui, {
+    wrapper: (args) => GlobalProvidersWrapper({
+      ...args,
+      initialRoutes
+    }), ...options
+  });
 
 export * from '@testing-library/react';
 export {customRender as render};
