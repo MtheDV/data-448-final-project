@@ -7,8 +7,12 @@ export const handlers = [
     return res(
       context.status(200),
       context.json({
-        teamsSets: mockTeamSets
+        teamSets: mockTeamSets
       })
+      // context.status(404),
+      // context.json({
+      //   message: 'Unable to find team sets'
+      // })
     );
   }),
   rest.get(baseURL + '/api/team-sets/:teamSetId', (req, res, context) => {

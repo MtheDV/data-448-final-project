@@ -1,62 +1,44 @@
 import {DefaultState, TeamSet} from '../../types';
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {AppDispatch, RootState} from '../store';
-import {AxiosError, AxiosResponse} from 'axios';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {RootState} from '../store';
 import axiosConfig from '../../api/axiosConfig';
 
 interface TeamSetsState extends DefaultState {
-  teamSets: Array<TeamSet>,
-  loading: boolean,
-  error: string
+  teamSets: Array<TeamSet>
 }
 
 const initialState: TeamSetsState = {
   teamSets: [],
-  loading: false,
-  error: ''
+  status: 'idle',
+  error: null
 };
+
+export const fetchTeamSets = createAsyncThunk('teamSets/fetchTeamSets', async () => {
+  const res = await axiosConfig.get('/api/team-sets');
+  return res.data;
+});
 
 export const teamSetsSlice = createSlice({
   name: 'teamSets',
   initialState,
-  reducers: {
-    fetchBegin: state => {
-      return {
-        ...state,
-        loading: true,
-        error: ''
-      };
-    },
-    fetchSuccess: (state, action: PayloadAction<Array<TeamSet>>) => {
-      return {
-        ...state,
-        teamSets: action.payload,
-        loading: false,
-        error: ''
-      };
-    },
-    fetchError: (state, action: PayloadAction<string>) => {
-      return {
-        ...state,
-        loading: false,
-        error: action.payload
-      };
-    }
+  reducers: {},
+  extraReducers: builder => {
+    builder
+      .addCase(fetchTeamSets.pending, state => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchTeamSets.fulfilled, (state, action) => {
+        state.status = 'complete';
+        state.teamSets = action.payload.teamSets;
+      })
+      .addCase(fetchTeamSets.rejected, (state, action) => {
+        state.status = 'error';
+        state.error = action.error.message ? action.error.message : '';
+      });
   }
 });
-export const {fetchBegin, fetchSuccess, fetchError} = teamSetsSlice.actions;
 
-// Selectors
-export const selectTeamSets = (state: RootState) => state.teamSets;
-
-// Get team sets through API via a thunk
-export const getTeamSets = () => (dispatch: AppDispatch) => {
-  dispatch(fetchBegin());
-  axiosConfig.get('/api/team-sets').then((res: AxiosResponse<{teamsSets: Array<TeamSet>}>) => {
-    dispatch(fetchSuccess(res.data.teamsSets));
-  }).catch((err: AxiosError) => {
-    dispatch(fetchError(err.message));
-  });
-};
+export const getTeamSets = (state: RootState) => state.teamSets;
 
 export default teamSetsSlice.reducer;

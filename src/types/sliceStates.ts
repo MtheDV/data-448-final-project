@@ -1,4 +1,4 @@
 export interface DefaultState {
-  loading: boolean,
-  error: string
+  status: 'idle' | 'loading' | 'complete' | 'error',
+  error: string | null
 }
