@@ -4,7 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-import { server } from './mocks/api/server';
+import { server } from './api/server';
 
 beforeAll(() => server.listen({
   onUnhandledRequest: ({ method, url }) => {

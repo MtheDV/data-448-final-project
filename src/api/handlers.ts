@@ -1,5 +1,5 @@
 import {rest} from 'msw';
-import {mockTeam1, mockTeamSets} from '../teams';
+import {mockTeam1, mockTeamSets} from '../mocks/teams';
 
 export const handlers = [
   rest.get('/api/team-sets', (req, res, context) => {

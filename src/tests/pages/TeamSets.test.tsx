@@ -1,8 +1,8 @@
 import {render} from '../utils';
 import {screen, waitForElementToBeRemoved} from '@testing-library/react';
 import {mockTeamSets} from '../../mocks/teams';
-import {server} from '../../mocks/api/server';
-import {getTeamSetsError} from '../../mocks/api/handlers';
+import {server} from '../../api/server';
+import {getTeamSetsError} from '../../api/handlers';
 import userEvent from '@testing-library/user-event';
 import {TeamSets, TeamSet} from '../../pages';
 import {Routes, Route} from 'react-router-dom';

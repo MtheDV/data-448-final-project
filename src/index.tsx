@@ -6,7 +6,7 @@ import {Provider} from 'react-redux';
 import store from './redux/store';
 import {BrowserRouter} from 'react-router-dom';
 import {Routing} from './routing';
-import {worker} from './mocks/api/browser';
+import {worker} from './api/browser';
 
 if (process.env.NODE_ENV === 'development') {
   worker.start({
