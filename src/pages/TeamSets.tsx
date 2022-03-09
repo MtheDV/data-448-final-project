@@ -1,28 +1,26 @@
-import {useEffect} from 'react';
-import {useAppDispatch, useAppSelector} from '../redux/hooks';
-import {fetchTeamSets, getTeamSets} from '../redux/slices/teamSetsSlice';
 import {routes} from '../routing';
 import {Link} from 'react-router-dom';
+import {useGetTeamSetsQuery} from '../redux/slices/api/apiSlice';
 
 const TeamSets = () => {
-  const {teamSets, status, error} = useAppSelector(getTeamSets);
-  const dispatch = useAppDispatch();
-  
-  useEffect(() => {
-    if (status === 'idle' || status === 'error') {
-      dispatch(fetchTeamSets());
-    }
-  }, []);
+  const {
+    data,
+    isLoading,
+    isError,
+    error
+  } = useGetTeamSetsQuery();
   
   return (
     <div>
       <h1>Team Sets</h1>
-      {status === 'loading' && <p>Loading...</p>}
-      {status === 'error' && <p>Error! {error}</p>}
-      {teamSets && teamSets.map((teamSet) =>
-        <Link key={`team-set-${teamSet.id}`} to={`${routes.teamSets}/${teamSet.id}`}>{teamSet.name}</Link>
-      )}
-      {teamSets.length <= 0 && <p>Looks like there are no team sets</p>}
+      {isLoading && <p>Loading...</p>}
+      {isError && <p>Error! {error && 'status' in error && error.data}</p>}
+      <ul>
+        {data && data.map((teamSet) =>
+          <li key={`team-set-${teamSet.id}`}><Link to={`${routes.teamSets}/${teamSet.id}`}>{teamSet.name}</Link></li>
+        )}
+      </ul>
+      {(!data || data.length <= 0) && <p>Looks like there are no team sets</p>}
     </div>
   );
 };

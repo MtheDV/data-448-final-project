@@ -6,6 +6,12 @@ import '@testing-library/jest-dom';
 
 import { server } from './mocks/api/server';
 
-beforeAll(() => server.listen());
+beforeAll(() => server.listen({
+  onUnhandledRequest: ({ method, url }) => {
+    if (!url.pathname.startsWith('/api')) {
+      throw new Error(`Unhandled ${method} request to ${url}`);
+    }
+  },
+}));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());

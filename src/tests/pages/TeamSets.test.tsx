@@ -9,7 +9,6 @@ import {Routes, Route} from 'react-router-dom';
 import {routes} from '../../routing';
 
 describe('Team Sets Page', () => {
-  
   beforeEach(async () => {
     render(
       <Routes>
@@ -26,11 +25,11 @@ describe('Team Sets Page', () => {
     });
   });
   
-  mockTeamSets.forEach(teamSet => {
-    it('should go to team set page when clicking team set', async () => {
-      userEvent.click(screen.getByText(teamSet.name));
-      expect(screen.getByRole('heading', {level: 1}).innerHTML === `Team Set ${teamSet.id}`).toBeTruthy();
-    });
+  it('should go to team set page when clicking team set', async () => {
+    const teamSet = mockTeamSets[0];
+    userEvent.click(screen.getByText(teamSet.name));
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading\.\.\./i));
+    expect(screen.getByRole('heading', {level: 1}).innerHTML === teamSet.name).toBeTruthy();
   });
 });
 
