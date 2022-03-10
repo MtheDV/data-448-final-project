@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {Team, TeamSet} from '../../../types';
+import {Team, TeamEnrollment, TeamSet} from '../../../types';
 
 export const apiSlice = createApi({
   reducerPath: 'api',
@@ -16,8 +16,17 @@ export const apiSlice = createApi({
     }),
     getTeam: builder.query<Team, Array<number>>({
       query: ([teamSetId, teamId]) => `team-sets/${teamSetId}/teams/${teamId}`
-    })
+    }),
+    getTeamEnrollments: builder.query<Array<TeamEnrollment>, Array<number>>({
+      query: ([teamSetId, teamId]) => `team-sets/${teamSetId}/teams/${teamId}/enrollments`
+    }),
   })
 });
 
-export const { useGetTeamSetsQuery, useGetTeamSetQuery, useGetTeamsQuery, useGetTeamQuery } = apiSlice;
+export const {
+  useGetTeamSetsQuery,
+  useGetTeamSetQuery,
+  useGetTeamsQuery,
+  useGetTeamQuery,
+  useGetTeamEnrollmentsQuery
+} = apiSlice;

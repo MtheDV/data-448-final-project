@@ -1,6 +1,7 @@
 import {routes} from '../routing';
 import {Link} from 'react-router-dom';
 import {useGetTeamSetsQuery} from '../redux/slices/api/apiSlice';
+import Spinner from '../components/Spinner/Spinner';
 
 const TeamSets = () => {
   const {
@@ -13,7 +14,8 @@ const TeamSets = () => {
   return (
     <div>
       <h1>Team Sets</h1>
-      {isLoading && <p>Loading...</p>}
+      <Spinner isLoading={isLoading}/>
+      <hr/>
       {isError && <p>Error! {error && 'status' in error && error.data}</p>}
       <ul>
         {data && data.map((teamSet) =>

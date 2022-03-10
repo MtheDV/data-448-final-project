@@ -7,9 +7,11 @@ type TeamContainerProps = {
 
 const TeamContainer = ({team}: TeamContainerProps) => {
   return (
-    <Link to={`teams/${team.id}`}>
-      <h2>{team.name}</h2>
-    </Link>
+    <li>
+      <Link to={`teams/${team.id}`}>
+        {team.name}
+      </Link>
+    </li>
   );
 };
 
