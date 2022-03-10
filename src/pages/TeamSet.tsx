@@ -9,30 +9,33 @@ const TeamSet = () => {
     data: teamSet,
     isLoading: isLoadingTeamSet,
     isError: isErrorTeamSet,
-    isSuccess: isSuccessTeamSet
+    error: teamSetError
   } = useGetTeamSetQuery(Number(teamSetId));
   const {
     data: teams,
     isLoading: isLoadingTeams,
     isError: isErrorTeams,
-    isSuccess: isSuccessTeams
+    error: teamsError
   } = useGetTeamsQuery(Number(teamSetId));
   
   return (
     <div>
-      {(isSuccessTeamSet && teamSet) && <h1>{teamSet.name}</h1>}
-      {isErrorTeamSet && <h1>Sorry! Looks like we couldn&apos;t find that team set.</h1>}
+      {teamSet && <h1>{teamSet.name}</h1>}
       <Spinner isLoading={isLoadingTeamSet || isLoadingTeams}/>
       <hr/>
-      <div>
-        <h2>Teams</h2>
-        <ul>
-          {(isSuccessTeams && teams) && teams.map(team =>
-            <TeamContainer key={`team-${team.id}`} team={team}/>
-          )}
-        </ul>
-        {isErrorTeams && <h2>Unable to load teams for this team set.</h2>}
-      </div>
+      {isErrorTeamSet && <p>Error! {teamSetError && 'status' in teamSetError && teamSetError.data}</p>}
+      {isErrorTeams && <p>Error! {teamsError && 'status' in teamsError && teamsError.data}</p>}
+      {teams &&
+        <>
+          <h2>Teams</h2>
+          <ul>
+            {teams.map(team =>
+              <TeamContainer key={`team-${team.id}`} team={team}/>
+            )}
+          </ul>
+        </>
+      }
+      {(!teams || teams.length <= 0) && <p>Looks like there are no teams</p>}
     </div>
   );
 };

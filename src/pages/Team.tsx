@@ -17,37 +17,26 @@ const Team = () => {
     error: enrollmentsError
   } = useGetTeamEnrollmentsQuery([Number(teamSetId), Number(teamId)]);
   
-  if (isErrorTeam && teamError && 'status' in teamError) {
-    return (
-      <div>
-        <h1>Error!</h1>
-        <p>Error: {teamError.data}</p>
-      </div>
-    );
-  }
-  
-  if (isErrorEnrollments && enrollmentsError && 'status' in enrollmentsError) {
-    return (
-      <div>
-        <h1>Error!</h1>
-        <p>Error: {enrollmentsError.data}</p>
-      </div>
-    );
-  }
-  
   return (
     <div>
       <h1>{team && team.name}</h1>
       <Spinner isLoading={isLoadingTeam || isLoadingEnrollments}/>
       <hr/>
-      <h2>Students</h2>
-      <ul>
-        {enrollments && enrollments.map(enrollment =>
-          <li key={`enrollment-${enrollment.id}`}>
-            {enrollment.student.name}
-          </li>
-        )}
-      </ul>
+      {isErrorTeam && <p>Error! {teamError && 'status' in teamError && teamError.data}</p>}
+      {isErrorEnrollments && <p>Error! {enrollmentsError && 'status' in enrollmentsError && enrollmentsError.data}</p>}
+      {enrollments &&
+        <>
+          <h2>Students</h2>
+          <ul>
+            {enrollments && enrollments.map(enrollment =>
+              <li key={`enrollment-${enrollment.id}`}>
+                {enrollment.student.name}
+              </li>
+            )}
+          </ul>
+        </>
+      }
+      {(!enrollments || enrollments.length <= 0) && <p>Looks like there are no students</p>}
     </div>
   );
 };

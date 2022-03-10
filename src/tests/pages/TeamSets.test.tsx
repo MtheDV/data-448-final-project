@@ -44,4 +44,8 @@ describe('Team Sets Page Error', () => {
   it('should render error', () => {
     expect(screen.getByText(/Error!/i)).toBeInTheDocument();
   });
+  
+  it('should display no team sets message', () => {
+    expect(screen.getByText(/Looks like there are no team sets/i)).toBeInTheDocument();
+  });
 });
