@@ -15,7 +15,8 @@ describe('Team Sets Page', () => {
         <Route path={routes.teamSets} element={<TeamSets/>}/>
         <Route path={routes.teamSet} element={<TeamSet/>}/>
       </Routes>,
-      ['/team-sets']);
+      ['/team-sets']
+    );
     await waitForElementToBeRemoved(() => screen.getByText(/Loading\.\.\./i));
   });
   

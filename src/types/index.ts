@@ -1,7 +1,8 @@
 import {Team, TeamSet} from './teams';
 import {Student} from './students';
 import {Assignment} from './grades';
-import {Enrollment} from './enrollments';
+import {TeamEnrollment} from './enrollments';
 import {DefaultState} from './sliceStates';
+import {Course} from './course';
 
-export type {Team, TeamSet, Student, Enrollment, Assignment, DefaultState};
+export type {Team, TeamSet, Student, TeamEnrollment, Assignment, DefaultState, Course};

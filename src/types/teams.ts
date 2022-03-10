@@ -1,10 +1,11 @@
 export type TeamSet = {
   id: number,
-  name: string
+  name: string,
+  courseId: number
 }
 
 export type Team = {
   id: number,
-  teamSet: TeamSet,
-  name: string
+  name: string,
+  teamSetId: number,
 }

@@ -4,14 +4,8 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-import { server } from './api/server';
+import {server} from './api/server';
 
-beforeAll(() => server.listen({
-  onUnhandledRequest: ({ method, url }) => {
-    if (!url.pathname.startsWith('/api')) {
-      throw new Error(`Unhandled ${method} request to ${url}`);
-    }
-  },
-}));
+beforeAll(() => server.listen({onUnhandledRequest: 'bypass'}));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
