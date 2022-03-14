@@ -9,7 +9,7 @@ import {Routing} from './routing';
 import {worker} from './api/browser';
 
 if (process.env.NODE_ENV === 'development') {
-  worker.start({onUnhandledRequest: 'bypass'}).then().catch();
+  worker.start({onUnhandledRequest: 'bypass'});
 }
 
 ReactDOM.render(
