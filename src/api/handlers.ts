@@ -1,18 +1,21 @@
 import {rest} from 'msw';
-import {mockTeamSets, mockTeamSetTeams} from '../mocks/teams';
-import {mockTeam1Enrollments, mockTeam2Enrollments} from '../mocks/enrollments';
+// import studentsJSON from './mocks/students.json';
+import teamSetsJSON from './mocks/teamSets.json';
+import teamsJSON from './mocks/teams.json';
+import teamEnrollmentsJSON from './mocks/teamEnrollments.json';
+import {Team, TeamEnrollment} from '../types';
 
 export const handlers = [
   rest.get('/api/team-sets', (req, res, context) => {
     return res(
       context.delay(),
       context.status(200),
-      context.json(mockTeamSets)
+      context.json(teamSetsJSON)
     );
   }),
   rest.get('/api/team-sets/:teamSetId', (req, res, context) => {
     const {teamSetId} = req.params;
-    const teamSet = mockTeamSets.find(teamSet => teamSet.id === Number(teamSetId));
+    const teamSet = teamSetsJSON.find(teamSet => teamSet.id === Number(teamSetId));
     if (teamSet) {
       return res(
         context.delay(),
@@ -29,7 +32,12 @@ export const handlers = [
   }),
   rest.get('/api/team-sets/:teamSetId/teams', (req, res, context) => {
     const {teamSetId} = req.params;
-    const teams = mockTeamSetTeams.find(teamSetTeams => teamSetTeams[0].teamSetId === Number(teamSetId));
+    const teams: Array<Team> = [];
+    teamsJSON.forEach(team => {
+      if (team.teamSetId === Number(teamSetId)) {
+        teams.push(team);
+      }
+    });
     return res(
       context.delay(),
       context.status(200),
@@ -38,7 +46,12 @@ export const handlers = [
   }),
   rest.get('/api/team-sets/:teamSetId/teams/:teamId', (req, res, context) => {
     const {teamSetId, teamId} = req.params;
-    const teams = mockTeamSetTeams.find(teamSetTeams => teamSetTeams[0].teamSetId === Number(teamSetId));
+    const teams: Array<Team> = [];
+    teamsJSON.forEach(team => {
+      if (team.teamSetId === Number(teamSetId)) {
+        teams.push(team);
+      }
+    });
     const team = teams?.find(team => team.id === Number(teamId));
     if (team) {
       return res(
@@ -56,27 +69,24 @@ export const handlers = [
   }),
   rest.get('/api/team-sets/:teamSetId/teams/:teamId/enrollments', (req, res, context) => {
     const {teamSetId, teamId} = req.params;
-    const teams = mockTeamSetTeams.find(teamSetTeams => teamSetTeams[0].teamSetId === Number(teamSetId));
-    const team = teams?.find(team => team.id === Number(teamId));
-    if (team?.id === mockTeam1Enrollments[0].teamId) {
+    const enrollments: Array<TeamEnrollment> = [];
+    teamEnrollmentsJSON.forEach(enrollment => {
+      if (enrollment.teamId === Number(teamId) && enrollment.teamSetId === Number(teamSetId)) {
+        enrollments.push(enrollment);
+      }
+    });
+    if (enrollments) {
       return res(
         context.delay(),
         context.status(200),
-        context.json(mockTeam1Enrollments)
-      );
-    }
-    if (team?.id === mockTeam2Enrollments[0].teamId) {
-      return res(
-        context.delay(),
-        context.status(200),
-        context.json(mockTeam2Enrollments)
+        context.json(enrollments)
       );
     }
     
     return res(
       context.delay(),
       context.status(404),
-      context.json('Unable to find the team')
+      context.json('Unable to find enrollments')
     );
   })
 ];

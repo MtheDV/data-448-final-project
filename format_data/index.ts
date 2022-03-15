@@ -8,7 +8,8 @@ type IncludedDataType = {
   source?: FormattedData,
   idMatch?: string,
   index: string,
-  parse?: (input: string) => string
+  parse?: (input: string) => string,
+  type?: 'string' | 'number'
 };
 type DataTypes = { [index: string]: IncludedDataType };
 
@@ -39,6 +40,7 @@ const formatData = async (csvInputFile: string, dataFormatHeaders: DataTypes, st
     };
     Object.entries(dataFormatHeaders).forEach(([header, dataIndex]) => {
       let value = dataIndex.source?.find(data => data[dataIndex.idMatch ?? 'id'] === record[header]) ?? record[header];
+      if (dataIndex.type === 'number') value = Number(value);
       if (dataIndex.parse) {
         value = dataIndex.parse(value);
       }
@@ -77,7 +79,8 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
 (async () => {
   const studentData = await formatData('overall-peers.csv', {
     'ID': {
-      index: 'id'
+      index: 'id',
+      type: 'number'
     },
     'Student': {
       index: 'name',
@@ -93,19 +96,26 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
   writeData('students.json', studentData);
   const teamsData = await formatData('341-teams-data.csv', {
     'Team ID': {
-      index: 'id'
+      index: 'id',
+      type: 'number'
     },
     'Team': {
       index: 'name'
     },
     'Team Set ID': {
-      index: 'teamSetId'
+      index: 'teamSetId',
+      type: 'number'
     }
   });
   writeData('teams.json', teamsData);
   const teamMembersData = await formatData('341-teams-data.csv', {
     'Team ID': {
-      index: 'teamId'
+      index: 'teamId',
+      type: 'number'
+    },
+    'Team Set ID': {
+      index: 'teamSetId',
+      type: 'number'
     },
     'Member 1': {
       source: studentData,
@@ -138,7 +148,7 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
     type: 'split',
     values: ['member1', 'member2', 'member3', 'member4', 'member5'],
     to: 'student'
-  }, ['teamId'], {
+  }, ['teamId', 'teamSetId'], {
     removeEmpty: true,
     addIncrementingId: true
   });
