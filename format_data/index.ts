@@ -2,14 +2,15 @@ import * as path from 'path';
 import * as fs from 'fs';
 import {parse} from 'csv-parse';
 
-type FormattedDataType = { [index: string]: string | number | Array<string | number> | FormattedDataType };
+type FormattedDataType = { [index: string]: string | number | Array<string | number | FormattedDataType> | FormattedDataType };
 type FormattedData = Array<FormattedDataType>;
 type IncludedDataType = {
   source?: FormattedData,
   idMatch?: string,
-  index: string,
+  column: string,
   parse?: (input: string) => string,
-  type?: 'string' | 'number'
+  type?: 'string' | 'number',
+  value?: string | number | Array<string | number> | FormattedDataType
 };
 type DataTypes = { [index: string]: IncludedDataType };
 
@@ -18,13 +19,25 @@ type TransformSplit = {
   values: Array<string>,
   to: string
 }
-type TransformOn = TransformSplit
+type TransformSplitWith = {
+  type: 'split-with',
+  values: Array<Array<string>>,
+  to: Array<string>
+}
+type TransformInsertInto = {
+  type: 'insert-into',
+  to: string,
+  on: string,
+  with: FormattedData
+}
+type TransformOn = TransformSplit | TransformSplitWith | TransformInsertInto
 type TransformOptions = {
   removeEmpty?: boolean,
-  addIncrementingId?: boolean
+  addIncrementingId?: boolean,
+  removeOnValue?: boolean
 }
 
-const formatData = async (csvInputFile: string, dataFormatHeaders: DataTypes, startPos?: number): Promise<FormattedData> => {
+const formatData = async (csvInputFile: string, dataFormatHeaders: DataTypes, startPos?: number, endPos?: number): Promise<FormattedData> => {
   const formattedData: FormattedData = [];
   
   const parser = fs
@@ -32,19 +45,24 @@ const formatData = async (csvInputFile: string, dataFormatHeaders: DataTypes, st
     .pipe(parse({
       delimiter: ',',
       columns: true,
-      from: startPos ?? 1
+      from: startPos ?? 1,
+      to: endPos
     }));
   for await (const record of parser) {
     const newData: FormattedDataType = {
       id: formattedData.length + 1
     };
     Object.entries(dataFormatHeaders).forEach(([header, dataIndex]) => {
-      let value = dataIndex.source?.find(data => data[dataIndex.idMatch ?? 'id'] === record[header]) ?? record[header];
+      if (dataIndex.value) {
+        newData[header] = dataIndex.value;
+        return;
+      }
+      let value = dataIndex.source?.find(data => data[dataIndex.idMatch ?? 'id'] === record[dataIndex.column]) ?? record[dataIndex.column];
       if (dataIndex.type === 'number') value = Number(value);
       if (dataIndex.parse) {
         value = dataIndex.parse(value);
       }
-      newData[dataIndex.index] = value;
+      newData[header] = value;
     });
     formattedData.push(newData);
   }
@@ -65,6 +83,31 @@ const transformFormattedData = (formattedData: FormattedData, transformOn: Trans
       });
       return [...previousValue, ...transformedValues];
     }
+    if (transformOn.type === 'split-with') {
+      const transformedValues: Array<FormattedDataType> = [];
+      transformOn.values.forEach(values => {
+        const transformKeep: FormattedDataType = {};
+        if (options.addIncrementingId) transformKeep.id = previousValue.length + transformedValues.length + 1;
+        holdValues?.forEach(hold => transformKeep[hold] = currentValue[hold]);
+        values.forEach((value, index) => {
+          if (options.removeEmpty && (currentValue[value] === null || currentValue[value] === '')) return;
+          transformKeep[transformOn.to[index]] = currentValue[value];
+        });
+        transformedValues.push(transformKeep);
+      });
+      return [...previousValue, ...transformedValues];
+    }
+    if (transformOn.type === 'insert-into') {
+      const insertableValues: FormattedData = [];
+      transformOn.with.forEach(insertData => {
+        if (currentValue[transformOn.on] === insertData[transformOn.on]) {
+          if (options.removeOnValue) delete insertData[transformOn.on];
+          insertableValues.push(insertData);
+        }
+      });
+      currentValue[transformOn.to] = insertableValues;
+    }
+    
     return [...previousValue, currentValue];
   }, []);
 };
@@ -78,72 +121,71 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
 
 (async () => {
   const studentData = await formatData('overall-peers.csv', {
-    'ID': {
-      index: 'id',
+    id: {
+      column: 'ID',
       type: 'number'
     },
-    'Student': {
-      index: 'name',
+    name: {
+      column: 'Student',
       parse: (input) => {
         const nameSplit = input.split(', ');
         return `${nameSplit[1]} ${nameSplit[0]}`;
       }
     },
-    'SIS User ID': {
-      index: 'studentId'
+    studentId: {
+      column: 'SIS User ID'
     }
   }, 3);
   writeData('students.json', studentData);
   const teamsData = await formatData('341-teams-data.csv', {
-    'Team ID': {
-      index: 'id',
+    id: {
+      column: 'Team ID',
       type: 'number'
     },
-    'Team': {
-      index: 'name'
+    name: {
+      column: 'Team'
     },
-    'Team Set ID': {
-      index: 'teamSetId',
+    teamSetId: {
+      column: 'Team Set ID',
       type: 'number'
     }
   });
   writeData('teams.json', teamsData);
   const teamMembersData = await formatData('341-teams-data.csv', {
-    'Team ID': {
-      index: 'teamId',
+    teamId: {
+      column: 'Team ID',
       type: 'number'
     },
-    'Team Set ID': {
-      index: 'teamSetId',
+    teamSetId: {
+      column: 'Team Set ID',
       type: 'number'
     },
-    'Member 1': {
+    member1: {
       source: studentData,
       idMatch: 'name',
-      index: 'member1'
+      column: 'Member 1'
     },
-    'Member 2': {
+    member2: {
       source: studentData,
       idMatch: 'name',
-      index: 'member2'
+      column: 'Member 2'
     },
-    'Member 3': {
+    member3: {
       source: studentData,
       idMatch: 'name',
-      index: 'member3'
+      column: 'Member 3'
     },
-    'Member 4': {
+    member4: {
       source: studentData,
       idMatch: 'name',
-      index: 'member4'
+      column: 'Member 4'
     },
-    'Member 5': {
+    member5: {
       source: studentData,
       idMatch: 'name',
-      index: 'member5'
+      column: 'Member 5'
     }
   });
-  writeData('teamMembers.json', teamMembersData);
   const teamEnrollmentsData = transformFormattedData(teamMembersData, {
     type: 'split',
     values: ['member1', 'member2', 'member3', 'member4', 'member5'],
@@ -153,4 +195,214 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
     addIncrementingId: true
   });
   writeData('teamEnrollments.json', teamEnrollmentsData);
+  const fullAssignmentsData = await formatData('overall-peers.csv', {
+    main1: {
+      column: 'Main Activity for Module 1 (741775)',
+      type: 'number'
+    },
+    main1Name: {
+      column: '',
+      value: 'Main Activity for Module 1'
+    },
+    main2: {
+      column: 'Main Activity for Module 2 (749660)',
+      type: 'number'
+    },
+    main2Name: {
+      column: '',
+      value: 'Main Activity for Module 2'
+    },
+    main3: {
+      column: 'Main Activity for Module 3 (749880)',
+      type: 'number'
+    },
+    main3Name: {
+      column: '',
+      value: 'Main Activity for Module 3'
+    },
+    main4: {
+      column: 'Main Activity for Module 4 (749896)',
+      type: 'number'
+    },
+    main4Name: {
+      column: '',
+      value: 'Main Activity for Module 4'
+    },
+    main5: {
+      column: 'Main Activity for Module 5 (815722)',
+      type: 'number'
+    },
+    main5Name: {
+      column: '',
+      value: 'Main Activity for Module 5'
+    },
+    main6: {
+      column: 'Main Activity for Module 6 (823394)',
+      type: 'number'
+    },
+    main6Name: {
+      column: '',
+      value: 'Main Activity for Module 6'
+    },
+    main7: {
+      column: 'Main Activity for Module 7 (839861)',
+      type: 'number'
+    },
+    main7Name: {
+      column: '',
+      value: 'Main Activity for Module 7'
+    },
+    main8: {
+      column: 'Main Activity for Module 8 (850715)',
+      type: 'number'
+    },
+    main8Name: {
+      column: '',
+      value: 'Main Activity for Module 8'
+    },
+    main9: {
+      column: 'Main Activity for Module 9 (852281)',
+      type: 'number'
+    },
+    main9Name: {
+      column: '',
+      value: 'Main Activity for Module 9'
+    },
+    main10: {
+      column: 'Main Activity for Module 10 (852284)',
+      type: 'number'
+    },
+    main10Name: {
+      column: '',
+      value: 'Main Activity for Module 10'
+    },
+    main11: {
+      column: 'Main Activity for Module 11 (851912)',
+      type: 'number'
+    },
+    main111Name: {
+      column: '',
+      value: 'Main Activity for Module 11'
+    }
+  }, 2, 2);
+  const assignmentsData = transformFormattedData(fullAssignmentsData, {
+    type: 'split-with',
+    values: [['main1', 'main1Name'], ['main2', 'main2Name'], ['main3', 'main3Name'], ['main4', 'main4Name'], ['main5', 'main5Name'], ['main6', 'main6Name'], ['main7', 'main7Name'], ['main8', 'main8Name'], ['main9', 'main9Name'], ['main10', 'main10Name'], ['main11', 'main11Name']],
+    to: ['grade', 'name']
+  }, [], {
+    removeEmpty: true,
+    addIncrementingId: true
+  });
+  const fullSubmissionsData = await formatData('overall-peers.csv', {
+    studentId: {
+      column: 'ID',
+      type: 'number'
+    },
+    main1: {
+      column: 'Main Activity for Module 1 (741775)',
+      type: 'number'
+    },
+    main1Name: {
+      column: '',
+      value: 'Main Activity for Module 1'
+    },
+    main2: {
+      column: 'Main Activity for Module 2 (749660)',
+      type: 'number'
+    },
+    main2Name: {
+      column: '',
+      value: 'Main Activity for Module 2'
+    },
+    main3: {
+      column: 'Main Activity for Module 3 (749880)',
+      type: 'number'
+    },
+    main3Name: {
+      column: '',
+      value: 'Main Activity for Module 3'
+    },
+    main4: {
+      column: 'Main Activity for Module 4 (749896)',
+      type: 'number'
+    },
+    main4Name: {
+      column: '',
+      value: 'Main Activity for Module 4'
+    },
+    main5: {
+      column: 'Main Activity for Module 5 (815722)',
+      type: 'number'
+    },
+    main5Name: {
+      column: '',
+      value: 'Main Activity for Module 5'
+    },
+    main6: {
+      column: 'Main Activity for Module 6 (823394)',
+      type: 'number'
+    },
+    main6Name: {
+      column: '',
+      value: 'Main Activity for Module 6'
+    },
+    main7: {
+      column: 'Main Activity for Module 7 (839861)',
+      type: 'number'
+    },
+    main7Name: {
+      column: '',
+      value: 'Main Activity for Module 7'
+    },
+    main8: {
+      column: 'Main Activity for Module 8 (850715)',
+      type: 'number'
+    },
+    main8Name: {
+      column: '',
+      value: 'Main Activity for Module 8'
+    },
+    main9: {
+      column: 'Main Activity for Module 9 (852281)',
+      type: 'number'
+    },
+    main9Name: {
+      column: '',
+      value: 'Main Activity for Module 9'
+    },
+    main10: {
+      column: 'Main Activity for Module 10 (852284)',
+      type: 'number'
+    },
+    main10Name: {
+      column: '',
+      value: 'Main Activity for Module 10'
+    },
+    main11: {
+      column: 'Main Activity for Module 11 (851912)',
+      type: 'number'
+    },
+    main111Name: {
+      column: '',
+      value: 'Main Activity for Module 11'
+    }
+  }, 3);
+  const submissionsData = transformFormattedData(fullSubmissionsData, {
+    type: 'split-with',
+    values: [['main1', 'main1Name'], ['main2', 'main2Name'], ['main3', 'main3Name'], ['main4', 'main4Name'], ['main5', 'main5Name'], ['main6', 'main6Name'], ['main7', 'main7Name'], ['main8', 'main8Name'], ['main9', 'main9Name'], ['main10', 'main10Name'], ['main11', 'main11Name']],
+    to: ['grade', 'name']
+  }, ['studentId'], {
+    removeEmpty: true,
+    addIncrementingId: true
+  });
+  const completeAssignmentsData = transformFormattedData(assignmentsData, {
+    type: 'insert-into',
+    to: 'submissions',
+    on: 'name',
+    with: submissionsData
+  }, [], {
+    removeOnValue: true
+  });
+  writeData('assignments.json', completeAssignmentsData);
+  writeData('submissions.json', submissionsData);
 })();
