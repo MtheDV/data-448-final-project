@@ -7,6 +7,6 @@ export type Assignment = {
 
 export type Submission = {
   id: number,
-  studentId: number
+  studentId: number,
   grade: number
 }
