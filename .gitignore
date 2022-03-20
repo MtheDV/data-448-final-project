@@ -26,4 +26,6 @@ yarn-error.log*
 /.idea
 
 # mock api data
-/src/api/mocks
+/src/api/mocks/*
+!/src/api/mocks/utils.ts
+!/src/api/mocks/index.ts

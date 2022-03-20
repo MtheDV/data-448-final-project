@@ -1,7 +1,7 @@
 import {render} from '../../tests/utils';
 import TeamContainer from './TeamContainer';
-import {mockTeam1} from '../../mocks/teams';
+import {mockTeams} from '../../api/mocks';
 
 test('renders', () => {
-  render(<TeamContainer team={mockTeam1}/>);
+  render(<TeamContainer team={mockTeams[0]}/>);
 });

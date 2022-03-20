@@ -1,12 +1,13 @@
 import {render} from '../utils';
 import {screen, waitForElementToBeRemoved} from '@testing-library/react';
-import {mockTeamSets} from '../../mocks/teams';
 import {server} from '../../api/server';
 import {getTeamSetsError} from '../../api/handlers';
 import userEvent from '@testing-library/user-event';
 import {TeamSets, TeamSet} from '../../pages';
 import {Routes, Route} from 'react-router-dom';
 import {routes} from '../../routing';
+import {getTeamSets} from '../../api/mocks/utils';
+import {mockTeamSets} from '../../api/mocks';
 
 describe('Team Sets Page', () => {
   beforeEach(async () => {
@@ -21,7 +22,7 @@ describe('Team Sets Page', () => {
   });
   
   it('should show team sets', async () => {
-    mockTeamSets.forEach(teamSet => {
+    getTeamSets().forEach(teamSet => {
       expect(screen.getByText(teamSet.name)).toBeInTheDocument();
     });
   });

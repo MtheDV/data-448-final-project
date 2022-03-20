@@ -8,8 +8,6 @@ describe('Home Page', () => {
   });
   
   it('should render', () => {
-    const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toBeInTheDocument();
-    expect(heading.innerHTML === 'Home').toBeTruthy();
+    expect(screen.getByText(/Home/i)).toBeInTheDocument();
   });
 });

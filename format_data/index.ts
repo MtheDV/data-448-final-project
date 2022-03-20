@@ -280,7 +280,7 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
       column: 'Main Activity for Module 11 (851912)',
       type: 'number'
     },
-    main111Name: {
+    main11Name: {
       column: '',
       value: 'Main Activity for Module 11'
     }
@@ -382,7 +382,7 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
       column: 'Main Activity for Module 11 (851912)',
       type: 'number'
     },
-    main111Name: {
+    main11Name: {
       column: '',
       value: 'Main Activity for Module 11'
     }
