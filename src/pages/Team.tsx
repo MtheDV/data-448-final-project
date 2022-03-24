@@ -1,6 +1,9 @@
 import {useGetTeamAssignmentsQuery, useGetTeamEnrollmentsQuery, useGetTeamQuery} from '../redux/slices/api/apiSlice';
 import {useParams} from 'react-router-dom';
 import Spinner from '../components/Spinner/Spinner';
+import {StudentTeamVisual} from '../components';
+import TeamVisual from '../components/TeamVisual/TeamVisual';
+import {useMemo} from 'react';
 
 const Team = () => {
   const {teamSetId, teamId} = useParams();
@@ -23,6 +26,8 @@ const Team = () => {
     error: assignmentsError
   } = useGetTeamAssignmentsQuery({teamSetId: Number(teamSetId), teamId: Number(teamId), submissions: true});
   
+  const students = useMemo(() => enrollments?.map(enrollment => enrollment.student), [enrollments]);
+  
   return (
     <div>
       <h1>{team && team.name}</h1>
@@ -31,14 +36,21 @@ const Team = () => {
       {isErrorTeam && <p>Error! {teamError && 'status' in teamError && teamError.data}</p>}
       {isErrorEnrollments && <p>Error! {enrollmentsError && 'status' in enrollmentsError && enrollmentsError.data}</p>}
       {isErrorAssignments && <p>Error! {assignmentsError && 'status' in assignmentsError && assignmentsError.data}</p>}
-      {enrollments &&
+      {students && assignments &&
+        <>
+          <h2>Assignment Performance</h2>
+          <TeamVisual students={students} assignments={assignments}/>
+        </>
+      }
+      {enrollments && assignments &&
         <>
           <h2>Students</h2>
           <ul>
             {enrollments.map(enrollment =>
-              <li key={`enrollment-${enrollment.id}`}>
-                {enrollment.student.name}
-              </li>
+              <StudentTeamVisual
+                key={`enrollment-${enrollment.id}`}
+                student={enrollment.student}
+                teamAssignments={assignments}/>
             )}
           </ul>
         </>

@@ -1,5 +1,5 @@
-import {Assignment, Course, Team, TeamEnrollment, TeamSet} from '../../types';
-import {mockAssignments, mockCourses, mockTeamEnrollments, mockTeams, mockTeamSets} from './index';
+import {Assignment, Course, Student, Team, TeamEnrollment, TeamSet} from '../../types';
+import {mockAssignments, mockCourses, mockStudents, mockTeamEnrollments, mockTeams, mockTeamSets} from './index';
 
 export const getCourses = (): Array<Course> => {
   return mockCourses;
@@ -7,6 +7,14 @@ export const getCourses = (): Array<Course> => {
 
 export const getCourse = (courseId: number): Course | undefined => {
   return getCourses().find(course => course.id === courseId);
+};
+
+export const getStudents = (): Array<Student> => {
+  return mockStudents;
+};
+
+export const getStudent = (studentId: number): Student | undefined => {
+  return getStudents().find(student => student.id === studentId);
 };
 
 export const getTeamSets = (): Array<TeamSet> => {
