@@ -24,6 +24,10 @@ describe('Team Set Page', () => {
     
   });
   
+  it('should display teams overall graph', () => {
+    expect(document.getElementById('teams-graph-display')?.innerHTML).toBeTruthy();
+  });
+  
   it('should display teams', async () => {
     const teams = getTeams(mockTeamSet.id);
     teams.forEach(team => {

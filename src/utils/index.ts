@@ -1,4 +1,4 @@
-import {Assignment, Student} from '../types';
+import {Assignment, Student, Team} from '../types';
 import {DataType, GraphData} from '../types';
 
 export const filterAssignmentsForStudent = (studentId: number, assignments: Array<Assignment>): Array<Assignment> => {
@@ -10,6 +10,41 @@ export const filterAssignmentsForStudent = (studentId: number, assignments: Arra
     });
   });
   return filteredAssignments;
+};
+
+export const prepareTeamSetGraphData = (teams: Array<Team>, assignments: Array<Assignment>): GraphData => {
+  const data: GraphData = [];
+  teams.forEach(team => {
+    const studentIds = team.enrollments.map(enrollment => enrollment.studentId);
+    const teamData: Array<DataType> = [];
+  
+    assignments.forEach(assignment => {
+      let teamAverageGrade = 0;
+      let teamSubmissions = 0;
+      assignment.submissions.forEach(submission => {
+        if (studentIds.includes(submission.studentId)) {
+          if (!assignment.optional) {
+            teamAverageGrade += submission.grade / assignment.grade * 100;
+            ++teamSubmissions;
+          }
+        }
+      });
+      if (teamSubmissions > 1) {
+        teamAverageGrade /= teamSubmissions;
+      }
+      teamData.push({
+        x: assignment.name,
+        y: teamAverageGrade
+      });
+    });
+    
+    data.push({
+      id: team.name,
+      data: teamData
+    });
+  });
+  
+  return data;
 };
 
 export const prepareTeamGraphSeries = (assignments: Array<Assignment>, students: Array<Student>): GraphData => {

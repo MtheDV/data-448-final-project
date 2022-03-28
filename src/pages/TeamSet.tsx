@@ -4,6 +4,9 @@ import {TeamContainer} from '../components';
 import Spinner from '../components/Spinner/Spinner';
 import {useMemo} from 'react';
 import {analyzeTeams} from '../utils/analyzeTeams';
+import {GraphData} from '../types';
+import {prepareTeamSetGraphData} from '../utils';
+import LineGraph from '../components/Graphs/LineGraph/LineGraph';
 
 const TeamSet = () => {
   const {teamSetId} = useParams();
@@ -26,6 +29,7 @@ const TeamSet = () => {
   } = useGetAssignmentsQuery(true);
   
   const teamsAnalyses = useMemo(() => analyzeTeams(teams ?? [], assignments ?? []), [teams, assignments]);
+  const teamsGraphData = useMemo<GraphData>(() => prepareTeamSetGraphData(teams ?? [], assignments ?? []), [teams, assignments]);
   
   return (
     <div>
@@ -35,6 +39,18 @@ const TeamSet = () => {
       {isErrorTeamSet && <p>Error! {teamSetError && 'status' in teamSetError && teamSetError.data}</p>}
       {isErrorTeams && <p>Error! {teamsError && 'status' in teamsError && teamsError.data}</p>}
       {isErrorAssignments && <p>Error! {assignmentsError && 'status' in assignmentsError && assignmentsError.data}</p>}
+      {teamsGraphData &&
+        <div id={'teams-graph-display'} style={{height: '20rem'}}>
+          <LineGraph
+            data={teamsGraphData}
+            tooltipDisplayAverage={true}
+            lineProps={{
+              margin: {top: 10, bottom: 10, right: 10, left: 30},
+              axisBottom: null
+            }}
+          />
+        </div>
+      }
       {teams &&
         <>
           <h2>Teams</h2>
