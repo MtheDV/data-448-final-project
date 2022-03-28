@@ -2,15 +2,16 @@ import * as path from 'path';
 import * as fs from 'fs';
 import {parse} from 'csv-parse';
 
-type FormattedDataType = { [index: string]: string | number | Array<string | number | FormattedDataType> | FormattedDataType };
+type FormattedDataValue = string | number | boolean | Array<string | number | FormattedDataType> | FormattedDataType;
+type FormattedDataType = { [index: string]: FormattedDataValue };
 type FormattedData = Array<FormattedDataType>;
 type IncludedDataType = {
   source?: FormattedData,
   idMatch?: string,
   column: string,
-  parse?: (input: string) => string,
+  parse?: ((input: string) => string) | ((input: FormattedDataType) => FormattedDataValue),
   type?: 'string' | 'number',
-  value?: string | number | Array<string | number> | FormattedDataType
+  value?: FormattedDataValue
 };
 type DataTypes = { [index: string]: IncludedDataType };
 
@@ -27,7 +28,7 @@ type TransformSplitWith = {
 type TransformInsertInto = {
   type: 'insert-into',
   to: string,
-  on: string,
+  on: { parentVal: string, withVal: string },
   with: FormattedData
 }
 type TransformOn = TransformSplit | TransformSplitWith | TransformInsertInto
@@ -59,9 +60,7 @@ const formatData = async (csvInputFile: string, dataFormatHeaders: DataTypes, st
       }
       let value = dataIndex.source?.find(data => data[dataIndex.idMatch ?? 'id'] === record[dataIndex.column]) ?? record[dataIndex.column];
       if (dataIndex.type === 'number') value = Number(value);
-      if (dataIndex.parse) {
-        value = dataIndex.parse(value);
-      }
+      if (dataIndex.parse) value = dataIndex.parse(value);
       newData[header] = value;
     });
     formattedData.push(newData);
@@ -74,7 +73,7 @@ const transformFormattedData = (formattedData: FormattedData, transformOn: Trans
     if (transformOn.type === 'split') {
       const transformedValues: Array<FormattedDataType> = [];
       transformOn.values.forEach(value => {
-        if (options.removeEmpty && (currentValue[value] === null || currentValue[value] === '')) return;
+        if (options.removeEmpty && (!currentValue[value] || currentValue[value] === '')) return;
         const transformKeep: FormattedDataType = {};
         if (options.addIncrementingId) transformKeep.id = previousValue.length + transformedValues.length + 1;
         holdValues?.forEach(hold => transformKeep[hold] = currentValue[hold]);
@@ -100,8 +99,8 @@ const transformFormattedData = (formattedData: FormattedData, transformOn: Trans
     if (transformOn.type === 'insert-into') {
       const insertableValues: FormattedData = [];
       transformOn.with.forEach(insertData => {
-        if (currentValue[transformOn.on] === insertData[transformOn.on]) {
-          if (options.removeOnValue) delete insertData[transformOn.on];
+        if (currentValue[transformOn.on.parentVal] === insertData[transformOn.on.withVal]) {
+          if (options.removeOnValue) delete insertData[transformOn.on.withVal];
           insertableValues.push(insertData);
         }
       });
@@ -127,7 +126,7 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
     },
     name: {
       column: 'Student',
-      parse: (input) => {
+      parse: (input: string) => {
         const nameSplit = input.split(', ');
         return `${nameSplit[1]} ${nameSplit[0]}`;
       }
@@ -136,7 +135,6 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
       column: 'SIS User ID'
     }
   }, 3);
-  writeData('students.json', studentData);
   const teamsData = await formatData('341-teams-data.csv', {
     id: {
       column: 'Team ID',
@@ -150,7 +148,6 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
       type: 'number'
     }
   });
-  writeData('teams.json', teamsData);
   const teamMembersData = await formatData('341-teams-data.csv', {
     teamId: {
       column: 'Team ID',
@@ -163,38 +160,73 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
     member1: {
       source: studentData,
       idMatch: 'name',
-      column: 'Member 1'
+      column: 'Member 1',
+      parse: (input: FormattedDataType) => {
+        return input['id'];
+      }
     },
     member2: {
       source: studentData,
       idMatch: 'name',
-      column: 'Member 2'
+      column: 'Member 2',
+      parse: (input: FormattedDataType) => {
+        return input['id'];
+      }
     },
     member3: {
       source: studentData,
       idMatch: 'name',
-      column: 'Member 3'
+      column: 'Member 3',
+      parse: (input: FormattedDataType) => {
+        return input['id'];
+      }
     },
     member4: {
       source: studentData,
       idMatch: 'name',
-      column: 'Member 4'
+      column: 'Member 4',
+      parse: (input: FormattedDataType) => {
+        return input['id'];
+      }
     },
     member5: {
       source: studentData,
       idMatch: 'name',
-      column: 'Member 5'
+      column: 'Member 5',
+      parse: (input: FormattedDataType) => {
+        return input['id'];
+      }
     }
   });
   const teamEnrollmentsData = transformFormattedData(teamMembersData, {
     type: 'split',
     values: ['member1', 'member2', 'member3', 'member4', 'member5'],
-    to: 'student'
+    to: 'studentId'
   }, ['teamId', 'teamSetId'], {
     removeEmpty: true,
     addIncrementingId: true
   });
   writeData('teamEnrollments.json', teamEnrollmentsData);
+  const studentsEnrollmentsData = transformFormattedData(studentData, {
+    type: 'insert-into',
+    to: 'enrollments',
+    on: {
+      parentVal: 'id',
+      withVal: 'studentId'
+    },
+    with: teamEnrollmentsData
+  }, [], {});
+  writeData('students.json', studentsEnrollmentsData);
+  const teamsEnrollmentsData = transformFormattedData(teamsData, {
+    type: 'insert-into',
+    to: 'enrollments',
+    on: {
+      parentVal: 'id',
+      withVal: 'teamId'
+    },
+    with: teamEnrollmentsData
+  }, [], {});
+  writeData('teams.json', teamsEnrollmentsData);
   const fullAssignmentsData = await formatData('overall-peers.csv', {
     main1: {
       column: 'Main Activity for Module 1 (741775)',
@@ -268,6 +300,10 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
       column: '',
       value: 'Main Activity for Module 9'
     },
+    main9Optional: {
+      column: '',
+      value: true
+    },
     main10: {
       column: 'Main Activity for Module 10 (852284)',
       type: 'number'
@@ -276,6 +312,10 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
       column: '',
       value: 'Main Activity for Module 10'
     },
+    main10Optional: {
+      column: '',
+      value: true
+    },
     main11: {
       column: 'Main Activity for Module 11 (851912)',
       type: 'number'
@@ -283,12 +323,16 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
     main11Name: {
       column: '',
       value: 'Main Activity for Module 11'
+    },
+    main11Optional: {
+      column: '',
+      value: true
     }
   }, 2, 2);
   const assignmentsData = transformFormattedData(fullAssignmentsData, {
     type: 'split-with',
-    values: [['main1', 'main1Name'], ['main2', 'main2Name'], ['main3', 'main3Name'], ['main4', 'main4Name'], ['main5', 'main5Name'], ['main6', 'main6Name'], ['main7', 'main7Name'], ['main8', 'main8Name'], ['main9', 'main9Name'], ['main10', 'main10Name'], ['main11', 'main11Name']],
-    to: ['grade', 'name']
+    values: [['main1', 'main1Name'], ['main2', 'main2Name'], ['main3', 'main3Name'], ['main4', 'main4Name'], ['main5', 'main5Name'], ['main6', 'main6Name'], ['main7', 'main7Name'], ['main8', 'main8Name'], ['main9', 'main9Name', 'main9Optional'], ['main10', 'main10Name', 'main10Optional'], ['main11', 'main11Name', 'main11Optional']],
+    to: ['grade', 'name', 'optional']
   }, [], {
     removeEmpty: true,
     addIncrementingId: true
@@ -370,6 +414,10 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
       column: '',
       value: 'Main Activity for Module 9'
     },
+    main9Optional: {
+      column: '',
+      value: true
+    },
     main10: {
       column: 'Main Activity for Module 10 (852284)',
       type: 'number'
@@ -378,6 +426,10 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
       column: '',
       value: 'Main Activity for Module 10'
     },
+    main10Optional: {
+      column: '',
+      value: true
+    },
     main11: {
       column: 'Main Activity for Module 11 (851912)',
       type: 'number'
@@ -385,12 +437,16 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
     main11Name: {
       column: '',
       value: 'Main Activity for Module 11'
+    },
+    main11Optional: {
+      column: '',
+      value: true
     }
   }, 3);
   const submissionsData = transformFormattedData(fullSubmissionsData, {
     type: 'split-with',
-    values: [['main1', 'main1Name'], ['main2', 'main2Name'], ['main3', 'main3Name'], ['main4', 'main4Name'], ['main5', 'main5Name'], ['main6', 'main6Name'], ['main7', 'main7Name'], ['main8', 'main8Name'], ['main9', 'main9Name'], ['main10', 'main10Name'], ['main11', 'main11Name']],
-    to: ['grade', 'name']
+    values: [['main1', 'main1Name'], ['main2', 'main2Name'], ['main3', 'main3Name'], ['main4', 'main4Name'], ['main5', 'main5Name'], ['main6', 'main6Name'], ['main7', 'main7Name'], ['main8', 'main8Name'], ['main9', 'main9Name', 'main9Optional'], ['main10', 'main10Name', 'main10Optional'], ['main11', 'main11Name', 'main11Optional']],
+    to: ['grade', 'name', 'optional']
   }, ['studentId'], {
     removeEmpty: true,
     addIncrementingId: true
@@ -398,7 +454,10 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
   const completeAssignmentsData = transformFormattedData(assignmentsData, {
     type: 'insert-into',
     to: 'submissions',
-    on: 'name',
+    on: {
+      parentVal: 'name',
+      withVal: 'name'
+    },
     with: submissionsData
   }, [], {
     removeOnValue: true

@@ -1,59 +1,53 @@
-import {curveMonotoneX} from '@visx/curve';
-import {Axis, Grid, LineSeries, Tooltip, XYChart} from '@visx/xychart';
-import {DataObject, DataType, Series} from '../../../types';
-import {ReactNode} from 'react';
-import {RenderTooltipParams} from '@visx/xychart/lib/components/Tooltip';
+import {LineProps, ResponsiveLine} from '@nivo/line';
+import {GraphData} from '../../../types';
+import Tooltip from '../Tooltip/Tooltip';
 
 type LineGraphProps = {
-  series: Series
-  xAccessor: (d: DataObject) => DataType,
-  yAccessor: (d: DataObject) => DataType,
-  options?: {
-    width?: number,
-    height: number,
-    tooltip: boolean,
-    tooltipRender: (params: RenderTooltipParams<DataObject>) => ReactNode,
-    axis: boolean,
-    xAxisTicks?: number,
-    yAxisTicks?: number,
-    gridTicks?: number
-  }
+  data: GraphData,
+  tooltipDisplayAverage?: boolean,
+  lineProps?: Partial<LineProps>
 }
 
-const LineGraph = ({series, xAccessor, yAccessor, options}: LineGraphProps) => {
+const LineGraph = ({data, tooltipDisplayAverage, lineProps}: LineGraphProps) => {
   return (
-    <XYChart
-      height={options?.height}
-      xScale={{type: 'band'}}
-      yScale={{type: 'linear'}}
-    >
-      {options?.axis &&
-        <>
-          <Axis orientation={'bottom'} numTicks={options?.xAxisTicks}/>
-          <Axis orientation={'left'} numTicks={options?.yAxisTicks}/>
-          <Grid columns={false} numTicks={options?.gridTicks ?? 3}/>
-        </>
-      }
-      {series.map((lineSeries, index) =>
-        <LineSeries
-          key={`line-series-${index}`}
-          dataKey={lineSeries.dataKey}
-          data={lineSeries.data}
-          xAccessor={xAccessor}
-          yAccessor={yAccessor}
-          curve={curveMonotoneX}
-        />
-      )}
-      {options?.tooltip &&
-        <Tooltip
-          snapTooltipToDatumX
-          snapTooltipToDatumY
-          showVerticalCrosshair
-          showSeriesGlyphs
-          renderTooltip={options?.tooltipRender}
-        />
-      }
-    </XYChart>
+    <ResponsiveLine
+      data={data}
+      margin={{top: 10, bottom: 30, right: 10, left: 30}}
+      xScale={{type: 'point'}}
+      yScale={{
+        type: 'linear',
+        min: 'auto',
+        max: 'auto'
+      }}
+      pointLabelYOffset={0}
+      curve={'monotoneX'}
+      enablePoints={false}
+      enableSlices={'x'}
+      sliceTooltip={({slice}) => {
+        return (
+          <Tooltip>
+            {tooltipDisplayAverage &&
+              <>
+                <p>
+                  {slice.points.length > 0 && slice.points[0].data.xFormatted}:&nbsp;
+                  {slice.points.reduce((prev, curr) => {
+                    return prev + Number(curr.data.yFormatted) / slice.points.length;
+                  }, 0).toFixed(1)}%
+                </p>
+                <hr/>
+              </>
+            }
+            {slice.points.map((point, index) =>
+              <div key={`point-${index}`}>
+                <div style={{backgroundColor: point.color, width: '1rem', height: '1rem'}}/>
+                <p>{point.serieId}: {tooltipDisplayAverage ? Number(point.data.yFormatted).toFixed(1) : point.data.yFormatted}%</p>
+              </div>
+            )}
+          </Tooltip>
+        );
+      }}
+      {...lineProps}
+    />
   );
 };
 

@@ -1,4 +1,5 @@
-import {Assignment, Data, Series, Student} from '../types';
+import {Assignment, Student} from '../types';
+import {DataType, GraphData} from '../types';
 
 export const filterAssignmentsForStudent = (studentId: number, assignments: Array<Assignment>): Array<Assignment> => {
   const filteredAssignments: Array<Assignment> = [];
@@ -11,39 +12,37 @@ export const filterAssignmentsForStudent = (studentId: number, assignments: Arra
   return filteredAssignments;
 };
 
-export const prepareTeamGraphSeries = (assignments: Array<Assignment>, students: Array<Student>): Series => {
-  const data: Data = [];
-  assignments.forEach(assignment => {
+export const prepareTeamGraphSeries = (assignments: Array<Assignment>, students: Array<Student>): GraphData => {
+  const data: GraphData = [];
+  students.forEach(student => {
+    const studentData: Array<DataType> = [];
+    
+    assignments.forEach(assignment => {
+      let studentAverageGrade = 0;
+      let studentSubmissions = 0;
+      assignment.submissions.forEach(submission => {
+        if (submission.studentId === student.id) {
+          if (!assignment.optional) {
+            studentAverageGrade += submission.grade / assignment.grade * 100;
+            ++studentSubmissions;
+          }
+        }
+      });
+      if (studentSubmissions > 1) {
+        studentAverageGrade /= studentSubmissions;
+      }
+      studentData.push({
+        x: assignment.name,
+        y: studentAverageGrade
+      });
+    });
+    
     data.push({
-      x: assignment.name,
-      y: getAverageAssignmentGrade(assignment),
-      studentGrades: assignment.submissions.map(submission => {
-        const student = students.find(student => student.id === submission.studentId);
-        return {
-          student,
-          grade: getAverageAssignmentGrade({...assignment, submissions: [submission]})
-        };
-      })
+      id: student.name,
+      data: studentData
     });
   });
-  return [{
-    dataKey: 'Overall Assignment Data',
-    data
-  }];
-};
-
-export const prepareStudentTeamGraphSeries = (assignments: Array<Assignment>): Series => {
-  const data: Data = [];
-  assignments.forEach(assignment => {
-    data.push({
-      x: assignment.name,
-      y: getAverageAssignmentGrade(assignment)
-    });
-  });
-  return [{
-    dataKey: 'Assignment Data',
-    data
-  }];
+  return data;
 };
 
 export const getAverageAssignmentGrade = (assignment: Assignment): number => {
@@ -63,7 +62,8 @@ export const getAverageAssignmentsGrade = (assignments: Array<Assignment>): numb
   let totalAssignments = 0;
   assignments.forEach(assignment => {
     const assignmentAverage = getAverageAssignmentGrade(assignment);
-    ++totalAssignments;
+    if (!assignment.optional)
+      ++totalAssignments;
     average += assignmentAverage;
   });
   average /= totalAssignments;

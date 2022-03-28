@@ -3,6 +3,7 @@ export type Assignment = {
   name: string,
   grade: number,
   submissions: Array<Submission>
+  optional?: boolean
 }
 
 export type Submission = {

@@ -1,9 +1,12 @@
-import {useGetTeamAssignmentsQuery, useGetTeamEnrollmentsQuery, useGetTeamQuery} from '../redux/slices/api/apiSlice';
+import {useGetAssignmentsQuery, useGetTeamQuery, useGetTeamStudentsQuery} from '../redux/slices/api/apiSlice';
 import {useParams} from 'react-router-dom';
 import Spinner from '../components/Spinner/Spinner';
 import {StudentTeamVisual} from '../components';
 import TeamVisual from '../components/TeamVisual/TeamVisual';
 import {useMemo} from 'react';
+import {analyzeStudents} from '../utils/analyzeTeams';
+import {GraphData} from '../types';
+import {prepareTeamGraphSeries} from '../utils';
 
 const Team = () => {
   const {teamSetId, teamId} = useParams();
@@ -14,48 +17,59 @@ const Team = () => {
     error: teamError
   } = useGetTeamQuery({teamSetId: Number(teamSetId), teamId: Number(teamId)});
   const {
-    data: enrollments,
-    isLoading: isLoadingEnrollments,
-    isError: isErrorEnrollments,
-    error: enrollmentsError
-  } = useGetTeamEnrollmentsQuery({teamSetId: Number(teamSetId), teamId: Number(teamId)});
+    data: students,
+    isLoading: isLoadingStudents,
+    isError: isErrorStudents,
+    error: studentsError
+  } = useGetTeamStudentsQuery({teamSetId: Number(teamSetId), teamId: Number(teamId)});
   const {
     data: assignments,
     isLoading: isLoadingAssignments,
     isError: isErrorAssignments,
     error: assignmentsError
-  } = useGetTeamAssignmentsQuery({teamSetId: Number(teamSetId), teamId: Number(teamId), submissions: true});
+  } = useGetAssignmentsQuery(true);
   
-  const students = useMemo(() => enrollments?.map(enrollment => enrollment.student), [enrollments]);
+  const filteredAssignments = useMemo(() =>
+    assignments?.map(assignment => {
+      return {
+        ...assignment,
+        submissions: assignment.submissions.filter(submission => students?.map(student => student.id).includes(submission.studentId))
+      };
+    }), [assignments, students]);
+  const [studentsAnalyses, studentsAverage] = useMemo(() => analyzeStudents(students?.map(student => student.id) ?? [], filteredAssignments ?? []), [students, assignments]);
+  const teamGraphData = useMemo<GraphData>(() => prepareTeamGraphSeries(assignments ?? [], students ?? []), [assignments, students]);
   
   return (
     <div>
       <h1>{team && team.name}</h1>
-      <Spinner isLoading={isLoadingTeam || isLoadingEnrollments || isLoadingAssignments}/>
+      <Spinner isLoading={isLoadingTeam || isLoadingStudents || isLoadingAssignments}/>
       <hr/>
       {isErrorTeam && <p>Error! {teamError && 'status' in teamError && teamError.data}</p>}
-      {isErrorEnrollments && <p>Error! {enrollmentsError && 'status' in enrollmentsError && enrollmentsError.data}</p>}
+      {isErrorStudents && <p>Error! {studentsError && 'status' in studentsError && studentsError.data}</p>}
       {isErrorAssignments && <p>Error! {assignmentsError && 'status' in assignmentsError && assignmentsError.data}</p>}
-      {students && assignments &&
+      {students && filteredAssignments &&
         <>
           <h2>Assignment Performance</h2>
-          <TeamVisual students={students} assignments={assignments}/>
+          <TeamVisual graphData={teamGraphData}/>
         </>
       }
-      {enrollments && assignments &&
+      {students && studentsAnalyses && filteredAssignments &&
         <>
           <h2>Students</h2>
+          <p>{studentsAverage.toFixed(1)}% Average</p>
           <ul>
-            {enrollments.map(enrollment =>
+            {students.map(student =>
               <StudentTeamVisual
-                key={`enrollment-${enrollment.id}`}
-                student={enrollment.student}
-                teamAssignments={assignments}/>
+                key={`enrollment-${student.id}`}
+                student={student}
+                graphData={teamGraphData.filter(data => data.id === student.name)}
+                analysisData={studentsAnalyses.find(studentsAnalysis => studentsAnalysis.studentId === student.id)}
+              />
             )}
           </ul>
         </>
       }
-      {(!enrollments || enrollments.length <= 0) && <p>Looks like there are no students</p>}
+      {(!students || students.length <= 0) && <p>Looks like there are no students</p>}
       {assignments &&
         <>
           <h2>Assignments</h2>

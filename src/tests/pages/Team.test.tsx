@@ -3,7 +3,7 @@ import {Team} from '../../pages';
 import {screen, waitForElementToBeRemoved} from '@testing-library/react';
 import {Route, Routes} from 'react-router-dom';
 import {routes} from '../../routing';
-import {getEnrollments, getTeamAssignments} from '../../api/mocks/utils';
+import {getAssignments, getTeamStudents} from '../../api/mocks/utils';
 import {mockTeams} from '../../api/mocks';
 
 describe('Team Page', () => {
@@ -23,17 +23,17 @@ describe('Team Page', () => {
     expect(screen.getByRole('heading', {level: 1}).innerHTML === mockTeam.name).toBeTruthy();
   });
   
-  it('should display users section', () => {
+  it('should display students', () => {
     expect(screen.getByText(/Students/i)).toBeInTheDocument();
-    const enrollments = getEnrollments(mockTeam.teamSetId, mockTeam.id);
-    enrollments.forEach(enrollment => {
-      expect(screen.getByText(enrollment.student.name)).toBeInTheDocument();
+    const students = getTeamStudents(mockTeam.teamSetId, mockTeam.id);
+    students.forEach(student => {
+      expect(screen.getByText(student.name)).toBeInTheDocument();
     });
   });
   
   it('should display assignments section', () => {
     expect(screen.getByText(/Assignments/i)).toBeInTheDocument();
-    const assignments = getTeamAssignments(mockTeam.teamSetId, mockTeam.id, true);
+    const assignments = getAssignments(true);
     assignments.forEach(assignment => {
       expect(screen.getByText(assignment.name)).toBeInTheDocument();
     });

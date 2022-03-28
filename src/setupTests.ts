@@ -6,6 +6,8 @@ import '@testing-library/jest-dom';
 
 import {server} from './api/server';
 
+global.ResizeObserver = require('resize-observer-polyfill');
+
 beforeAll(() => server.listen({onUnhandledRequest: 'bypass'}));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());

@@ -1,35 +1,19 @@
-import {Assignment, Series, Student} from '../../types';
-import {LineGraph} from '../Graphs';
-import {useMemo} from 'react';
-import {prepareTeamGraphSeries} from '../../utils';
+import {GraphData} from '../../types';
+import LineGraph from '../Graphs/LineGraph/LineGraph';
 
 type TeamVisualProps = {
-  students: Array<Student>,
-  assignments: Array<Assignment>
+  graphData: GraphData,
 }
 
-const TeamVisual = ({students, assignments}: TeamVisualProps) => {
-  const graphSeries = useMemo<Series>(() => prepareTeamGraphSeries(assignments, students), [assignments]);
-  
+const TeamVisual = ({graphData}: TeamVisualProps) => {
   return (
-    <div>
+    <div style={{height: '20rem'}}>
       <LineGraph
-        series={graphSeries}
-        xAccessor={d => d.x}
-        yAccessor={d => d.y}
-        options={{
-          height: 500,
-          axis: true,
-          xAxisTicks: 4,
-          tooltip: true,
-          tooltipRender: (params =>
-            <>
-              <p>{params.tooltipData?.nearestDatum?.datum?.x}</p>
-              {params.tooltipData?.nearestDatum?.datum?.studentGrades instanceof Array && params.tooltipData?.nearestDatum?.datum?.studentGrades.map((student) =>
-                <p key={`${student.student?.id}-assignments-grade`}>{student.student?.name}: {student.grade.toFixed(1)}%</p>
-              )}
-            </>
-          )
+        data={graphData}
+        tooltipDisplayAverage={true}
+        lineProps={{
+          margin: {top: 10, bottom: 10, right: 10, left: 30},
+          axisBottom: null
         }}
       />
     </div>

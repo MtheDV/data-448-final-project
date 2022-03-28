@@ -1,3 +1,4 @@
+import Tooltip from './Tooltip/Tooltip';
 import LineGraph from './LineGraph/LineGraph';
 
-export {LineGraph};
+export default {Tooltip, LineGraph};

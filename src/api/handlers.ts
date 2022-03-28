@@ -1,13 +1,13 @@
 import {rest} from 'msw';
 import {
+  getAssignments,
   getCourse,
   getCourses,
-  getEnrollments,
   getTeam,
-  getTeamAssignments,
   getTeams,
   getTeamSet,
-  getTeamSets
+  getTeamSets,
+  getTeamStudents
 } from './mocks/utils';
 
 export const handlers = [
@@ -61,19 +61,18 @@ export const handlers = [
       context.json('Unable to find the team')
     );
   }),
-  rest.get('/api/team-sets/:teamSetId/teams/:teamId/enrollments', (req, res, context) => {
+  rest.get('/api/team-sets/:teamSetId/teams/:teamId/students', (req, res, context) => {
     const {teamSetId, teamId} = req.params;
-    const enrollments = getEnrollments(Number(teamSetId), Number(teamId));
+    const students = getTeamStudents(Number(teamSetId), Number(teamId));
     return res(
       context.delay(),
       context.status(200),
-      context.json(enrollments)
+      context.json(students)
     );
   }),
-  rest.get('/api/team-sets/:teamSetId/teams/:teamId/assignments', (req, res, context) => {
-    const {teamSetId, teamId} = req.params;
+  rest.get('/api/assignments', (req, res, context) => {
     const includeSubmissions = req.url.searchParams.get('submissions') === 'true';
-    const assignments = getTeamAssignments(Number(teamSetId), Number(teamId), includeSubmissions);
+    const assignments = getAssignments(includeSubmissions);
     return res(
       context.delay(),
       context.status(200),

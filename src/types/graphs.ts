@@ -1,10 +1,12 @@
-import {Student} from './students';
+export type GraphData = Array<Data>;
 
-export type StudentDataType = Array<{ student?: Student, grade: number }>
-export type DataType = number | string | StudentDataType;
-export type DataObject = { [index: string]: DataType };
-export type Data = Array<DataObject>;
-export type Series = Array<{
-  dataKey: string,
-  data: Data
-}>;
+export type DataType = {
+  x: number | string,
+  y: number | string
+}
+
+export type Data = {
+  id: string,
+  color?: string,
+  data: Array<DataType>
+};

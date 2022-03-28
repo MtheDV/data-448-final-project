@@ -1,35 +1,36 @@
-import {Assignment, Student} from '../../types';
-import {useMemo} from 'react';
-import {filterAssignmentsForStudent, getAverageAssignmentsGrade, prepareStudentTeamGraphSeries} from '../../utils';
-import {LineGraph} from '../Graphs';
+import {AnalysisStudentAssignmentsDetails, Student} from '../../types';
+import {GraphData} from '../../types';
+import LineGraph from '../Graphs/LineGraph/LineGraph';
 
 type StudentTeamVisualProps = {
   student: Student,
-  teamAssignments: Array<Assignment>
+  graphData: GraphData,
+  analysisData?: AnalysisStudentAssignmentsDetails
 }
 
-const StudentTeamVisual = ({student, teamAssignments}: StudentTeamVisualProps) => {
-  const studentAssignments = useMemo<Array<Assignment>>(() => filterAssignmentsForStudent(student.id, teamAssignments), [student.id, teamAssignments]);
-  const graphSeries = useMemo(() => prepareStudentTeamGraphSeries(studentAssignments), [studentAssignments]);
-  const averageAssignmentsGrade = useMemo(() => getAverageAssignmentsGrade(studentAssignments), [studentAssignments]);
-  
+const StudentTeamVisual = ({student, graphData, analysisData}: StudentTeamVisualProps) => {
   return (
     <li>
       <h3>{student.name}</h3>
-      <div>
+      <p>{analysisData?.averageGrade.toFixed(1)}%</p>
+      {analysisData?.details.map((analysisDetail, index) =>
+        analysisDetail.type !== 'neutral' &&
+        <p key={`${student.id}-analysis-${index}`}>{analysisDetail.results}</p>
+      )}
+      <div style={{height: '5rem'}}>
         <LineGraph
-          series={graphSeries}
-          xAccessor={(d) => d.x}
-          yAccessor={(d) => d.y}
-          options={{
-            height: 400,
-            tooltip: false,
-            tooltipRender: () => <></>,
-            axis: false
+          data={graphData}
+          lineProps={{
+            margin: {top: 20, right: 0, bottom: 5, left: 0},
+            axisLeft: null,
+            axisBottom: null,
+            enableArea: true,
+            enableSlices: false,
+            enableGridX: false,
+            enableGridY: false
           }}
         />
       </div>
-      <p>{averageAssignmentsGrade.toFixed(1)}%</p>
     </li>
   );
 };

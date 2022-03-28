@@ -1,18 +1,18 @@
 import {render} from '../../tests/utils';
 import StudentTeamVisual from './StudentTeamVisual';
-import {mockTeamEnrollments} from '../../api/mocks';
+import {mockStudents} from '../../api/mocks';
 import {screen} from '@testing-library/react';
-import {getTeamAssignments} from '../../api/mocks/utils';
 import {filterAssignmentsForStudent, getAverageAssignmentsGrade} from '../../utils';
-
+import {getAssignments} from '../../api/mocks/utils';
 
 describe('Student Team Visual Component', () => {
-  const mockEnrollment = mockTeamEnrollments[0];
-  const mockStudent = mockEnrollment.student;
-  const teamAssignments = getTeamAssignments(mockEnrollment.teamSetId, mockEnrollment.teamId, true);
+  const mockStudent = mockStudents[0];
+  const teamAssignments = getAssignments(true);
+  const studentAssignments = filterAssignmentsForStudent(mockStudent.id, teamAssignments);
+  const averageAssignmentsGrade = getAverageAssignmentsGrade(studentAssignments);
   
   beforeEach(() => {
-    render(<StudentTeamVisual student={mockStudent}  teamAssignments={teamAssignments}/>);
+    render(<StudentTeamVisual student={mockStudent} analysisData={{studentId: mockStudent.id, averageGrade: averageAssignmentsGrade, details: []}} graphData={[]}/>);
   });
   
   it('should render with level 3 name', () => {
@@ -20,8 +20,6 @@ describe('Student Team Visual Component', () => {
   });
   
   it('should render with average assignments grade', () => {
-    const studentAssignments = filterAssignmentsForStudent(mockStudent.id, teamAssignments);
-    const averageAssignmentsGrade = getAverageAssignmentsGrade(studentAssignments);
     expect(screen.getByText(`${averageAssignmentsGrade.toFixed(1)}%`)).toBeInTheDocument();
   });
 });

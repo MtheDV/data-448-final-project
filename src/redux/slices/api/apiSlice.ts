@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {Assignment, Team, TeamEnrollment, TeamSet} from '../../../types';
+import {Assignment, Student, Team, TeamSet} from '../../../types';
 
 export const apiSlice = createApi({
   reducerPath: 'api',
@@ -17,17 +17,11 @@ export const apiSlice = createApi({
     getTeam: builder.query<Team, { teamSetId: number, teamId: number }>({
       query: ({teamSetId, teamId}) => `team-sets/${teamSetId}/teams/${teamId}`
     }),
-    getTeamEnrollments: builder.query<Array<TeamEnrollment>, { teamSetId: number, teamId: number }>({
-      query: ({teamSetId, teamId}) => `team-sets/${teamSetId}/teams/${teamId}/enrollments`
+    getTeamStudents: builder.query<Array<Student>, { teamSetId: number, teamId: number }>({
+      query: ({teamSetId, teamId}) => `team-sets/${teamSetId}/teams/${teamId}/students`
     }),
-    getTeamAssignments: builder.query<Array<Assignment>, { teamSetId: number, teamId: number, submissions: boolean }>({
-      query: (
-        {
-          teamSetId,
-          teamId,
-          submissions
-        }
-      ) => `team-sets/${teamSetId}/teams/${teamId}/assignments?submissions=${submissions}`
+    getAssignments: builder.query<Array<Assignment>, boolean>({
+      query: (submissions) => `assignments?submissions=${submissions}`
     })
   })
 });
@@ -37,6 +31,6 @@ export const {
   useGetTeamSetQuery,
   useGetTeamsQuery,
   useGetTeamQuery,
-  useGetTeamEnrollmentsQuery,
-  useGetTeamAssignmentsQuery
+  useGetTeamStudentsQuery,
+  useGetAssignmentsQuery
 } = apiSlice;

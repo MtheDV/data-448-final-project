@@ -1,5 +1,5 @@
-import {Assignment, Course, Student, Team, TeamEnrollment, TeamSet} from '../../types';
-import {mockAssignments, mockCourses, mockStudents, mockTeamEnrollments, mockTeams, mockTeamSets} from './index';
+import {Assignment, Course, Student, Team, TeamSet} from '../../types';
+import {mockAssignments, mockCourses, mockStudents, mockTeams, mockTeamSets} from './index';
 
 export const getCourses = (): Array<Course> => {
   return mockCourses;
@@ -33,11 +33,12 @@ export const getTeam = (teamSetId: number, teamId: number): Team | undefined => 
   return getTeams(teamSetId).find(team => team.id === teamId);
 };
 
-export const getEnrollments = (teamSetId: number, teamId: number): Array<TeamEnrollment> => {
-  return mockTeamEnrollments.filter(enrollment => enrollment.teamId === Number(teamId) && enrollment.teamSetId === Number(teamSetId));
+export const getTeamStudents = (teamSetId: number, teamId: number): Array<Student> => {
+  const teamEnrollments = getTeam(teamSetId, teamId)?.enrollments;
+  return getStudents().filter(student => teamEnrollments?.find(enrollment => enrollment.studentId === student.id));
 };
 
-export const getAssignments = (includeSubmissions?: boolean) => {
+export const getAssignments = (includeSubmissions?: boolean): Array<Assignment> => {
   if (includeSubmissions) return mockAssignments;
   return mockAssignments.map(assignment => {
     return {
@@ -45,16 +46,4 @@ export const getAssignments = (includeSubmissions?: boolean) => {
       submissions: []
     };
   });
-};
-
-export const getTeamAssignments = (teamSetId: number, teamId: number, includeSubmissions?: boolean): Array<Assignment> => {
-  const assignments: Array<Assignment> = [];
-  const enrollments = getEnrollments(teamSetId, teamId);
-  getAssignments(includeSubmissions).forEach(assignment => {
-    assignments.push({
-      ...assignment,
-      submissions: assignment.submissions.filter(submission => enrollments.find(enrollment => enrollment.student.id === submission.studentId))
-    });
-  });
-  return assignments;
 };
