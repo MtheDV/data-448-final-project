@@ -43,10 +43,10 @@ const TeamSet = () => {
         <div id={'teams-graph-display'} style={{height: '20rem'}}>
           <LineGraph
             data={teamsGraphData}
-            tooltipDisplayAverage={true}
+            displayTooltip={'number'}
             lineProps={{
               margin: {top: 10, bottom: 10, right: 10, left: 30},
-              axisBottom: null
+              axisBottom: null,
             }}
           />
         </div>

@@ -4,11 +4,11 @@ import Tooltip from '../Tooltip/Tooltip';
 
 type LineGraphProps = {
   data: GraphData,
-  tooltipDisplayAverage?: boolean,
+  displayTooltip?: 'number' | 'string' | 'none'
   lineProps?: Partial<LineProps>
 }
 
-const LineGraph = ({data, tooltipDisplayAverage, lineProps}: LineGraphProps) => {
+const LineGraph = ({data, displayTooltip, lineProps}: LineGraphProps) => {
   return (
     <ResponsiveLine
       data={data}
@@ -19,28 +19,56 @@ const LineGraph = ({data, tooltipDisplayAverage, lineProps}: LineGraphProps) => 
         min: 'auto',
         max: 'auto'
       }}
+      pointSize={8}
       pointLabelYOffset={0}
       curve={'monotoneX'}
-      enablePoints={false}
+      useMesh={displayTooltip !== 'none' && lineProps?.enableSlices === false}
+      tooltip={({point}) => {
+        return (
+          <Tooltip>
+            <p className={'text-sm'}>
+              {point.data.xFormatted}
+            </p>
+            <hr className={'my-1'}/>
+            <div className={'flex items-center'}>
+              <div style={{backgroundColor: point.color}} className={'w-3 h-3 rounded mr-1'}/>
+              <p>
+                {point.serieId}:&nbsp;
+                <span className={'font-bold'}>
+                  {displayTooltip === 'number' ? Number(point.data.yFormatted).toFixed(1) : point.data.yFormatted}%
+                </span>
+              </p>
+            </div>
+          </Tooltip>
+        );
+      }}
+      enablePoints={true}
       enableSlices={'x'}
       sliceTooltip={({slice}) => {
         return (
           <Tooltip>
-            {tooltipDisplayAverage &&
+            {displayTooltip === 'number' &&
               <>
-                <p>
+                <p className={'text-sm'}>
                   {slice.points.length > 0 && slice.points[0].data.xFormatted}:&nbsp;
-                  {slice.points.reduce((prev, curr) => {
-                    return prev + Number(curr.data.yFormatted) / slice.points.length;
-                  }, 0).toFixed(1)}%
+                  <span className={'font-bold'}>
+                    {slice.points.reduce((prev, curr) => {
+                      return prev + Number(curr.data.yFormatted) / slice.points.length;
+                    }, 0).toFixed(1)}%
+                  </span>
                 </p>
-                <hr/>
+                <hr className={'my-1'}/>
               </>
             }
             {slice.points.map((point, index) =>
-              <div key={`point-${index}`}>
-                <div style={{backgroundColor: point.color, width: '1rem', height: '1rem'}}/>
-                <p>{point.serieId}: {tooltipDisplayAverage ? Number(point.data.yFormatted).toFixed(1) : point.data.yFormatted}%</p>
+              <div key={`point-${index}`} className={'flex items-center gap-2'}>
+                <div style={{backgroundColor: point.color}} className={'w-3 h-3 rounded mr-1'}/>
+                <p
+                  className={'text-sm'}>{point.serieId}:&nbsp;
+                  <span className={'font-bold'}>
+                    {displayTooltip === 'number' ? Number(point.data.yFormatted).toFixed(1) : point.data.yFormatted}%
+                  </span>
+                </p>
               </div>
             )}
           </Tooltip>

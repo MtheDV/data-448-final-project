@@ -1,27 +1,31 @@
-import SidebarNavStyles from './SidebarNav.module.scss';
 import {NavLink} from 'react-router-dom';
-import {useCallback} from 'react';
+import {ReactElement, useCallback} from 'react';
 import {routes} from '../../routing';
 
 const SidebarNav = () => {
-  const navLinkStyles = useCallback(({isActive}: { isActive: boolean }): string => {
-    return isActive ? SidebarNavStyles.sidebarNav_nav_active : SidebarNavStyles.sidebarNav_nav_inActive;
+  const CustomNavLink = useCallback((route: string, text: string): ReactElement => {
+    const navLinkStyles = ({isActive}: { isActive: boolean }): string => {
+      const defaultStyle = 'flex py-1 px-2 hover:bg-gray-100 hover:text-black hover:font-semibold rounded';
+      return `${defaultStyle} ${isActive ? 'text-black font-semibold' : 'text-gray-500'}`;
+    };
+    
+    return (
+      <NavLink to={route} className={navLinkStyles}>
+        {text}
+      </NavLink>
+    );
   }, []);
   
   return (
-    <aside className={SidebarNavStyles.sidebarNav}>
-      <span>App</span>
-      <nav>
-        <ul>
+    <aside className={'max-w-lg w-60 h-screen border-r border-r-gray-100 p-3 sticky top-0'}>
+      <span className={'text-2xl font-bold'}>App</span>
+      <nav className={'mt-5'}>
+        <ul className={'flex flex-col gap-2'}>
           <li>
-            <NavLink to={routes.home} className={navLinkStyles}>
-              Home
-            </NavLink>
+            {CustomNavLink(routes.home, 'Home')}
           </li>
           <li>
-            <NavLink to={routes.teamSets} className={navLinkStyles}>
-              Team Sets
-            </NavLink>
+            {CustomNavLink(routes.teamSets, 'Team Sets')}
           </li>
         </ul>
       </nav>

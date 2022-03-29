@@ -1,14 +1,13 @@
 import {Outlet} from 'react-router-dom';
 import {Header, SidebarNav, Footer} from '../components';
-import AppStyles from '../styles/App.module.scss';
 
 function App() {
   return (
-    <div className={AppStyles.app}>
+    <div className={'flex flex-row h-full'}>
       <SidebarNav/>
-      <div className={AppStyles.appContent}>
+      <div className={'flex flex-col w-full'}>
         <Header/>
-        <main className={AppStyles.appContent_main}>
+        <main className={'flex-grow p-3'}>
           <Outlet/>
         </main>
         <Footer/>

@@ -10,7 +10,7 @@ const TeamVisual = ({graphData}: TeamVisualProps) => {
     <div style={{height: '20rem'}}>
       <LineGraph
         data={graphData}
-        tooltipDisplayAverage={true}
+        displayTooltip={'number'}
         lineProps={{
           margin: {top: 10, bottom: 10, right: 10, left: 30},
           axisBottom: null

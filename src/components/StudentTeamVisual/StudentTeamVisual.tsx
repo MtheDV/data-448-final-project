@@ -20,6 +20,7 @@ const StudentTeamVisual = ({student, graphData, analysisData}: StudentTeamVisual
       <div style={{height: '5rem'}}>
         <LineGraph
           data={graphData}
+          displayTooltip={'none'}
           lineProps={{
             margin: {top: 20, right: 0, bottom: 5, left: 0},
             axisLeft: null,
@@ -27,7 +28,8 @@ const StudentTeamVisual = ({student, graphData, analysisData}: StudentTeamVisual
             enableArea: true,
             enableSlices: false,
             enableGridX: false,
-            enableGridY: false
+            enableGridY: false,
+            enablePoints: false
           }}
         />
       </div>
