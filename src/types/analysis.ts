@@ -1,3 +1,5 @@
+import {analysisTypeNegative, analysisTypeNeutral, analysisTypePositive} from '../constants';
+
 export type AnalysisTeamAssignmentsDetails = {
   teamId: number,
   averageGrade: number,
@@ -17,4 +19,4 @@ export type AnalysisStudentAssignmentsDetails = {
   }>,
 }
 
-export type AnalysisType = 'positive' | 'negative' | 'neutral';
+export type AnalysisType = typeof analysisTypePositive | typeof analysisTypeNegative | typeof analysisTypeNeutral;

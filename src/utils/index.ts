@@ -23,7 +23,7 @@ export const prepareTeamSetGraphData = (teams: Array<Team>, assignments: Array<A
       let teamSubmissions = 0;
       assignment.submissions.forEach(submission => {
         if (studentIds.includes(submission.studentId)) {
-          if (!assignment.optional) {
+          if (!assignment.optional || submission.grade > 0) {
             teamAverageGrade += submission.grade / assignment.grade * 100;
             ++teamSubmissions;
           }
@@ -57,7 +57,7 @@ export const prepareTeamGraphSeries = (assignments: Array<Assignment>, students:
       let studentSubmissions = 0;
       assignment.submissions.forEach(submission => {
         if (submission.studentId === student.id) {
-          if (!assignment.optional) {
+          if (!assignment.optional || submission.grade > 0) {
             studentAverageGrade += submission.grade / assignment.grade * 100;
             ++studentSubmissions;
           }

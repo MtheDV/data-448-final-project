@@ -1,45 +1,50 @@
 import {
-  AnalysisStudentAssignmentsDetails, AnalysisTeamAssignmentsDetails,
+  AnalysisStudentAssignmentsDetails,
+  AnalysisTeamAssignmentsDetails,
   AnalysisType,
   Assignment,
   Team
 } from '../types';
+import {analysisTypeNegative, analysisTypeNeutral, analysisTypePositive} from '../constants';
 
 export const analyzeTeams = (teams: Array<Team>, assignments: Array<Assignment>): Array<AnalysisTeamAssignmentsDetails> => {
-  // For each team, determine the average grades for their associated assignments
-  // Compare average grades against each other between teams
-  // Calculate differences and determine the results about it
-  // Result examples:
-  //    For {Assignment Name}, {Team Name} is performing 10% worse than other teams\
-  let teamsAverage = 0;
+  const teamsGrades: Array<number> = [];
   const teamsAnalyses: Array<AnalysisTeamAssignmentsDetails> = teams.map(team => {
-    const { analyses: details, average: teamAverage} = analyzeStudents(team.enrollments.map(enrollment => enrollment.studentId), assignments);
-    teamsAverage += teamAverage;
+    const {
+      analyses: details,
+      average: teamAverage
+    } = analyzeStudents(team.enrollments.map(enrollment => enrollment.studentId), assignments);
+    teamsGrades.push(teamAverage);
     
     return {
       teamId: team.id,
       averageGrade: teamAverage,
-      type: 'neutral',
+      type: analysisTypeNeutral,
       results: '',
       details: details,
     };
   });
-  teamsAverage /= teams.length;
+  
+  const teamsMean = teamsGrades.sort()[Math.floor(teamsGrades.length / 2)];
+  const teamsGradesSTD = Math.sqrt(
+    Math.pow(teamsGrades.reduce((previousValue, currentValue) => {
+      return previousValue + (currentValue - teamsMean);
+    }, 0), 2) / teamsGrades.length
+  );
   
   teamsAnalyses.forEach(teamsAnalysis => {
-    const difference = Math.abs(teamsAnalysis.averageGrade - teamsAverage);
+    const difference = Math.abs(teamsAnalysis.averageGrade - teamsMean);
     
-    if (teamsAnalysis.averageGrade > teamsAverage) teamsAnalysis.type = 'positive';
-    if (teamsAnalysis.averageGrade < teamsAverage) teamsAnalysis.type = 'negative';
-    if (teamsAnalysis.type === 'neutral') return;
+    if (teamsAnalysis.averageGrade > teamsMean + teamsGradesSTD) teamsAnalysis.type = analysisTypePositive;
+    if (teamsAnalysis.averageGrade < teamsMean - teamsGradesSTD) teamsAnalysis.type = analysisTypeNegative;
     
-    teamsAnalysis.results = `Performing ${difference.toFixed(1)}% ${teamsAnalysis.type === 'positive' ? 'better' : 'worse'} than the average.`;
+    teamsAnalysis.results = `Performing ${difference.toFixed(1)}% ${teamsAnalysis.averageGrade >= teamsMean ? 'better' : 'worse'} than the average.`;
   });
   
   return teamsAnalyses;
 };
 
-export const analyzeStudents = (studentIds: Array<number>, assignments: Array<Assignment>): {analyses: Array<AnalysisStudentAssignmentsDetails>, average: number} => {
+export const analyzeStudents = (studentIds: Array<number>, assignments: Array<Assignment>): { analyses: Array<AnalysisStudentAssignmentsDetails>, average: number } => {
   const studentAnalyses: Array<AnalysisStudentAssignmentsDetails> = studentIds.map(studentId => {
     return {
       studentId,
@@ -77,39 +82,27 @@ const analyzeStudentsAssignment = (studentAnalyses: Array<AnalysisStudentAssignm
   let averageGrade = 0;
   let totalSubmissionsAnalyzed = 0;
   
-  const assignmentSubmissionGradeCount: { [index: string]: number } = {};
-  assignment.submissions.forEach(submission => {
-    if (!assignmentSubmissionGradeCount[submission.grade.toString()])
-      assignmentSubmissionGradeCount[submission.grade.toString()] = 0;
-    assignmentSubmissionGradeCount[submission.grade.toString()] += 1;
-  });
-  let mostCommonGrade = 0;
-  let mostCommonGradeCount = 0;
-  Object.entries(assignmentSubmissionGradeCount).forEach(([grade, count]) => {
-    if (count >= mostCommonGradeCount) {
-      mostCommonGrade = Number(grade);
-      mostCommonGradeCount = count;
-    }
-  });
+  const sortedGrades = assignment.submissions.map(submission => submission.grade).sort();
+  const mostCommonGrade = sortedGrades[Math.floor(sortedGrades.length / 2)];
   
   assignment.submissions.forEach(submission => {
     const studentAnalysis = studentAnalyses.find(studentAnalysis => studentAnalysis.studentId === submission.studentId);
     
     if (!studentAnalysis) return;
     
-    let type: AnalysisType = 'neutral';
-    if (submission.grade < mostCommonGrade) type = 'negative';
-    if (submission.grade > mostCommonGrade) type = 'positive';
+    let type: AnalysisType = analysisTypeNeutral;
+    if (submission.grade < mostCommonGrade) type = analysisTypeNegative;
+    if (submission.grade > mostCommonGrade) type = analysisTypePositive;
     
     let results = '';
     if (type !== 'neutral') {
       const difference = Math.abs(mostCommonGrade - submission.grade) / assignment.grade * 100;
       const mostCommon = mostCommonGrade / assignment.grade * 100;
       const grade = submission.grade / assignment.grade * 100;
-      results = `Performed ${difference.toFixed(1)}% ${type === 'positive' ? 'better' : 'worse'} in ${assignment.name}${assignment.optional ? ' (Optional)' : ''}. (Common: ${mostCommon.toFixed(1)}%, Theirs: ${grade.toFixed(1)}%)`;
+      results = `Performed ${difference.toFixed(1)}% ${type === analysisTypePositive ? 'better' : 'worse'} in ${assignment.name}${assignment.optional ? ' (Optional)' : ''}. (Common: ${mostCommon.toFixed(1)}%, Theirs: ${grade.toFixed(1)}%)`;
     }
     
-    if (!assignment.optional) {
+    if (!assignment.optional || submission.grade > 0) {
       const average = submission.grade / assignment.grade * 100;
       averageGrade += average;
       ++totalSubmissionsAnalyzed;
