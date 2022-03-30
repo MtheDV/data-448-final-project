@@ -36,53 +36,44 @@ const Team = () => {
         submissions: assignment.submissions.filter(submission => students?.map(student => student.id).includes(submission.studentId))
       };
     }), [assignments, students]);
-  const [studentsAnalyses, studentsAverage] = useMemo(() => analyzeStudents(students?.map(student => student.id) ?? [], filteredAssignments ?? []), [students, assignments]);
+  const {analyses: studentsAnalyses} = useMemo(() => analyzeStudents(students?.map(student => student.id) ?? [], filteredAssignments ?? []), [students, assignments]);
   const teamGraphData = useMemo<GraphData>(() => prepareTeamGraphSeries(assignments ?? [], students ?? []), [assignments, students]);
   
   return (
-    <div>
-      <h1>{team && team.name}</h1>
-      <Spinner isLoading={isLoadingTeam || isLoadingStudents || isLoadingAssignments}/>
-      <hr/>
-      {isErrorTeam && <p>Error! {teamError && 'status' in teamError && teamError.data}</p>}
-      {isErrorStudents && <p>Error! {studentsError && 'status' in studentsError && studentsError.data}</p>}
-      {isErrorAssignments && <p>Error! {assignmentsError && 'status' in assignmentsError && assignmentsError.data}</p>}
-      {students && filteredAssignments &&
-        <>
-          <h2>Assignment Performance</h2>
-          <TeamVisual graphData={teamGraphData}/>
-        </>
-      }
-      {students && studentsAnalyses && filteredAssignments &&
-        <>
-          <h2>Students</h2>
-          <p>{studentsAverage.toFixed(1)}% Average</p>
-          <ul>
-            {students.map(student =>
-              <StudentTeamVisual
-                key={`enrollment-${student.id}`}
-                student={student}
-                graphData={teamGraphData.filter(data => data.id === student.name)}
-                analysisData={studentsAnalyses.find(studentsAnalysis => studentsAnalysis.studentId === student.id)}
-              />
-            )}
-          </ul>
-        </>
-      }
-      {(!students || students.length <= 0) && <p>Looks like there are no students</p>}
-      {assignments &&
-        <>
-          <h2>Assignments</h2>
-          <ul>
-            {assignments.map(assignment =>
-              <li key={`assignment-${assignment.id}`}>
-                {assignment.name}
-              </li>
-            )}
-          </ul>
-        </>
-      }
-      {(!assignments || assignments.length <= 0) && <p>Looks like there are no assignments</p>}
+    <div className={''}>
+      <div className={''}>
+        <div className={'flex justify-between items-center mb-5'}>
+          <h1 className={'text-3xl font-bold'}>{team && team.name}</h1>
+          <Spinner isLoading={isLoadingTeam || isLoadingStudents || isLoadingAssignments}/>
+        </div>
+        <hr/>
+        {isErrorTeam && <p>Error! {teamError && 'status' in teamError && teamError.data}</p>}
+        {isErrorStudents && <p>Error! {studentsError && 'status' in studentsError && studentsError.data}</p>}
+        {isErrorAssignments &&
+          <p>Error! {assignmentsError && 'status' in assignmentsError && assignmentsError.data}</p>}
+        {students && filteredAssignments &&
+          <>
+            <h2 className={'text-xl font-semibold my-5'}>Assignment Performance</h2>
+            <TeamVisual graphData={teamGraphData}/>
+          </>
+        }
+        <h2 className={'text-xl font-semibold my-5'}>Students</h2>
+        {students && studentsAnalyses && filteredAssignments &&
+          <>
+            <ul className={'grid grid-cols-auto-flow-grid grid-flow-row-dense gap-3'}>
+              {students.map(student =>
+                <StudentTeamVisual
+                  key={`enrollment-${student.id}`}
+                  student={student}
+                  graphData={teamGraphData.filter(data => data.id === student.name)}
+                  analysisData={studentsAnalyses.find(studentsAnalysis => studentsAnalysis.studentId === student.id)}
+                />
+              )}
+            </ul>
+          </>
+        }
+        {(!students || students.length <= 0) && <p>Looks like there are no students</p>}
+      </div>
     </div>
   );
 };

@@ -7,7 +7,7 @@ type TeamVisualProps = {
 
 const TeamVisual = ({graphData}: TeamVisualProps) => {
   return (
-    <div style={{height: '20rem'}}>
+    <div className={'h-72 p-4 border border-gray-400 rounded-lg'}>
       <LineGraph
         data={graphData}
         displayTooltip={'number'}

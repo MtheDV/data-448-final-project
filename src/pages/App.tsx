@@ -7,7 +7,7 @@ function App() {
       <SidebarNav/>
       <div className={'flex flex-col w-full'}>
         <Header/>
-        <main className={'flex-grow p-3'}>
+        <main className={'flex-grow p-5'}>
           <Outlet/>
         </main>
         <Footer/>

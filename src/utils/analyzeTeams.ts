@@ -13,7 +13,7 @@ export const analyzeTeams = (teams: Array<Team>, assignments: Array<Assignment>)
   //    For {Assignment Name}, {Team Name} is performing 10% worse than other teams\
   let teamsAverage = 0;
   const teamsAnalyses: Array<AnalysisTeamAssignmentsDetails> = teams.map(team => {
-    const [details, teamAverage] = analyzeStudents(team.enrollments.map(enrollment => enrollment.studentId), assignments);
+    const { analyses: details, average: teamAverage} = analyzeStudents(team.enrollments.map(enrollment => enrollment.studentId), assignments);
     teamsAverage += teamAverage;
     
     return {
@@ -39,7 +39,7 @@ export const analyzeTeams = (teams: Array<Team>, assignments: Array<Assignment>)
   return teamsAnalyses;
 };
 
-export const analyzeStudents = (studentIds: Array<number>, assignments: Array<Assignment>): [Array<AnalysisStudentAssignmentsDetails>, number] => {
+export const analyzeStudents = (studentIds: Array<number>, assignments: Array<Assignment>): {analyses: Array<AnalysisStudentAssignmentsDetails>, average: number} => {
   const studentAnalyses: Array<AnalysisStudentAssignmentsDetails> = studentIds.map(studentId => {
     return {
       studentId,
@@ -67,7 +67,10 @@ export const analyzeStudents = (studentIds: Array<number>, assignments: Array<As
     studentAnalysis.averageGrade /= studentAnalysis.details.filter(detail => !detail.optional).length;
   });
   
-  return [studentAnalyses, studentsAverage];
+  return {
+    analyses: studentAnalyses,
+    average: studentsAverage
+  };
 };
 
 const analyzeStudentsAssignment = (studentAnalyses: Array<AnalysisStudentAssignmentsDetails>, assignment: Assignment): number => {
