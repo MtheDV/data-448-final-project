@@ -63,7 +63,7 @@ const TeamSet = () => {
           {teams &&
             <>
               <h2 className={'text-xl font-semibold my-5'}>Teams</h2>
-              <ul>
+              <ul className={'grid grid-cols-auto-flow-grid grid-flow-row-dense gap-4'}>
                 {teams.map(team =>
                   <TeamContainer
                     key={`team-${team.id}`}
