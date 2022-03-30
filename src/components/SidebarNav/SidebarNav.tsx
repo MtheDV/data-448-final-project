@@ -1,16 +1,22 @@
 import {NavLink} from 'react-router-dom';
 import {ReactElement, useCallback} from 'react';
 import {routes} from '../../routing';
+import {HomeIcon, UserGroupIcon} from '@heroicons/react/outline';
 
 const SidebarNav = () => {
-  const CustomNavLink = useCallback((route: string, text: string): ReactElement => {
+  const CustomNavLink = useCallback((route: string, text: string, Icon?: ReactElement): ReactElement => {
     const navLinkStyles = ({isActive}: { isActive: boolean }): string => {
-      const defaultStyle = 'flex py-1 px-2 hover:bg-gray-100 hover:text-black hover:font-semibold rounded';
+      const defaultStyle = 'flex items-center py-2 px-3 hover:bg-gray-100 hover:text-black hover:font-semibold rounded';
       return `${defaultStyle} ${isActive ? 'text-black font-semibold bg-gray-100' : 'text-gray-500'}`;
     };
     
     return (
       <NavLink to={route} className={navLinkStyles}>
+        {Icon !== undefined &&
+          <span className={'w-5 h-5 mr-3'}>
+            {Icon}
+          </span>
+        }
         {text}
       </NavLink>
     );
@@ -25,10 +31,10 @@ const SidebarNav = () => {
       <nav className={'mt-5'}>
         <ul className={'flex flex-col gap-2'}>
           <li>
-            {CustomNavLink(routes.home, 'Home')}
+            {CustomNavLink(routes.home, 'Home', <HomeIcon/>)}
           </li>
           <li>
-            {CustomNavLink(routes.teamSets, 'Team Sets')}
+            {CustomNavLink(routes.teamSets, 'Team Sets', <UserGroupIcon/>)}
           </li>
         </ul>
       </nav>
