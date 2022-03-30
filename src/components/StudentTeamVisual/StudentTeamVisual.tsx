@@ -10,13 +10,13 @@ type StudentTeamVisualProps = {
 
 const StudentTeamVisual = ({student, graphData, analysisData}: StudentTeamVisualProps) => {
   return (
-    <li className={'h-52 relative border border-gray-400 rounded-lg overflow-hidden'}>
+    <li className={'h-40 relative border border-gray-400 rounded-lg overflow-hidden'}>
       <h3 className={'absolute top-3 left-3 text-lg'}>{student.name}</h3>
       <p className={'absolute left-3 bottom-3 text-2xl font-semibold'}>{analysisData?.averageGrade.toFixed(1)}%</p>
-      {analysisData?.details.map((analysisDetail, index) =>
-        analysisDetail.type !== 'neutral' &&
-        <p key={`${student.id}-analysis-${index}`}>{analysisDetail.results}</p>
-      )}
+      {/*{analysisData?.details.map((analysisDetail, index) =>*/}
+      {/*  analysisDetail.type !== 'neutral' &&*/}
+      {/*  <p key={`${student.id}-analysis-${index}`}>{analysisDetail.results}</p>*/}
+      {/*)}*/}
       <LineGraph
         data={graphData}
         displayTooltip={'none'}

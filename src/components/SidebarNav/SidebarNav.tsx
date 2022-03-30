@@ -17,7 +17,7 @@ const SidebarNav = () => {
   }, []);
   
   return (
-    <aside className={'max-w-lg w-60 h-screen border-r border-r-gray-100 p-3 sticky top-0'}>
+    <aside className={'w-64 h-screen border-r border-r-gray-100 p-3 sticky top-0'}>
       <span className={'text-2xl font-bold'}>App</span>
       <nav className={'mt-5'}>
         <ul className={'flex flex-col gap-2'}>

@@ -13,13 +13,19 @@ const TeamSets = () => {
   
   return (
     <div>
-      <h1>Team Sets</h1>
-      <Spinner isLoading={isLoading}/>
+      <div className={'flex justify-between items-center mb-5'}>
+        <h1 className={'text-3xl font-bold'}>Team Sets</h1>
+        <Spinner isLoading={isLoading}/>
+      </div>
       <hr/>
       {isError && <p>Error! {error && 'status' in error && error.data}</p>}
-      <ul>
+      <ul className={'mt-5'}>
         {data && data.map((teamSet) =>
-          <li key={`team-set-${teamSet.id}`}><Link to={`${routes.teamSets}/${teamSet.id}`}>{teamSet.name}</Link></li>
+          <li key={`team-set-${teamSet.id}`}>
+            <Link to={`${routes.teamSets}/${teamSet.id}`}>
+              <span className={'text-blue-500 hover:text-blue-600'}>{teamSet.name}</span>
+            </Link>
+          </li>
         )}
       </ul>
       {(!data || data.length <= 0) && <p>Looks like there are no team sets</p>}

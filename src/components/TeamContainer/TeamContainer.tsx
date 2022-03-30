@@ -6,17 +6,12 @@ type TeamContainerProps = {
   teamAnalysis?: AnalysisTeamAssignmentsDetails
 }
 
-const TeamContainer = ({team, teamAnalysis}: TeamContainerProps) => {
+const TeamContainer = ({team}: TeamContainerProps) => {
   return (
     <li>
       <Link to={`teams/${team.id}`}>
-        {team.name}
+        <span className={'text-blue-500 hover:text-blue-600'}>{team.name}</span>
       </Link>
-      {teamAnalysis &&
-        <>
-          <p>{teamAnalysis.results}</p>
-        </>
-      }
     </li>
   );
 };
