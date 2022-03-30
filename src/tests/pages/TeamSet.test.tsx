@@ -31,7 +31,7 @@ describe('Team Set Page', () => {
   it('should display teams', async () => {
     const teams = getTeams(mockTeamSet.id);
     teams.forEach(team => {
-      expect(screen.getByText(team.name)).toBeInTheDocument();
+      expect(screen.getAllByText(team.name)[0]).toBeInTheDocument();
     });
   });
 });
