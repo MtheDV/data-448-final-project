@@ -25,7 +25,7 @@ export const analyzeTeams = (teams: Array<Team>, assignments: Array<Assignment>)
     };
   });
   
-  const teamsMean = teamsGrades.sort()[Math.floor(teamsGrades.length / 2)];
+  const teamsMean = teamsGrades.sort()[Math.floor(teamsGrades.length / 2) - 1];
   const teamsGradesSTD = Math.sqrt(
     Math.pow(teamsGrades.reduce((previousValue, currentValue) => {
       return previousValue + (currentValue - teamsMean);
@@ -83,7 +83,7 @@ const analyzeStudentsAssignment = (studentAnalyses: Array<AnalysisStudentAssignm
   let totalSubmissionsAnalyzed = 0;
   
   const sortedGrades = assignment.submissions.map(submission => submission.grade).sort();
-  const mostCommonGrade = sortedGrades[Math.floor(sortedGrades.length / 2)];
+  const mostCommonGrade = sortedGrades[Math.floor(sortedGrades.length / 2) - 1];
   
   assignment.submissions.forEach(submission => {
     const studentAnalysis = studentAnalyses.find(studentAnalysis => studentAnalysis.studentId === submission.studentId);
