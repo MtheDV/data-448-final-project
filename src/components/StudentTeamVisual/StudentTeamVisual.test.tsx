@@ -12,7 +12,7 @@ describe('Student Team Visual Component', () => {
   const averageAssignmentsGrade = getAverageAssignmentsGrade(studentAssignments);
   
   beforeEach(() => {
-    render(<StudentTeamVisual student={mockStudent} analysisData={{studentId: mockStudent.id, averageGrade: averageAssignmentsGrade, details: []}} graphData={[]}/>);
+    render(<StudentTeamVisual student={mockStudent} analysisData={{studentId: mockStudent.id, averageGrade: averageAssignmentsGrade, details: []}} graphData={[]} selected={false}/>);
   });
   
   it('should render with level 3 name', () => {

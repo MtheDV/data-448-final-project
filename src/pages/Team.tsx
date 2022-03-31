@@ -3,7 +3,7 @@ import {useParams} from 'react-router-dom';
 import Spinner from '../components/Spinner/Spinner';
 import {StudentTeamVisual} from '../components';
 import TeamVisual from '../components/TeamVisual/TeamVisual';
-import {useMemo} from 'react';
+import {useMemo, useState} from 'react';
 import {analyzeStudents} from '../utils/analyzeTeams';
 import {AnalysisStudentAssignmentsDetails, GraphData} from '../types';
 import {prepareTeamGraphSeries} from '../utils';
@@ -40,6 +40,8 @@ const Team = () => {
   const {analyses: studentsAnalyses} = useMemo<{ analyses: Array<AnalysisStudentAssignmentsDetails>, average: number }>(() => analyzeStudents(students?.map(student => student.id) ?? [], filteredAssignments ?? []), [students, assignments]);
   const teamGraphData = useMemo<GraphData>(() => prepareTeamGraphSeries(assignments ?? [], students ?? []), [assignments, students]);
   
+  const [selectedStudentFromAnalysis, setSelectedStudentFromAnalysis] = useState<number | undefined>(undefined);
+  
   return (
     <>
       <div className={'flex justify-between items-center mb-5'}>
@@ -68,6 +70,7 @@ const Team = () => {
                     student={student}
                     graphData={teamGraphData.filter(data => data.id === student.name)}
                     analysisData={studentsAnalyses.find(studentsAnalysis => studentsAnalysis.studentId === student.id)}
+                    selected={selectedStudentFromAnalysis === student.id}
                   />
                 )}
               </ul>
@@ -82,6 +85,7 @@ const Team = () => {
               key={`analysis-${studentAnalysis.studentId}-${index}`}
               analysis={studentAnalysis}
               student={students?.find(student => student.id === studentAnalysis.studentId)}
+              setSelectedStudentFromAnalysis={setSelectedStudentFromAnalysis}
             />
           )}
         </div>

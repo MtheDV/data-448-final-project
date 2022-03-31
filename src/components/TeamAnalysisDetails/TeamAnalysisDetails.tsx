@@ -1,19 +1,27 @@
 import {AnalysisTeamAssignmentsDetails, Team} from '../../types';
 import {analysisTypeNegative, analysisTypePositive} from '../../constants';
+import {Dispatch, SetStateAction} from 'react';
 
 type AnalysisProps = {
   analysis: AnalysisTeamAssignmentsDetails,
-  team?: Team
+  team?: Team,
+  setSelectedTeamFromAnalysis: Dispatch<SetStateAction<number | undefined>>
 }
 
-const TeamAnalysisDetails = ({analysis, team}: AnalysisProps) => {
+const TeamAnalysisDetails = ({analysis, team, setSelectedTeamFromAnalysis}: AnalysisProps) => {
+  const setSelected = () => {
+    setSelectedTeamFromAnalysis(team?.id);
+  };
+  
   return (
     <div>
       <h3 className={'text-lg font-semibold my-2'}>{team?.name}</h3>
-      <div
-        className={`p-3 border ${analysis.type === analysisTypeNegative ? 'border-red-400' : analysis.type === analysisTypePositive ? 'border-blue-400' : 'border-gray-400'} rounded-lg`}>
+      <button
+        className={`text-left p-3 border ${analysis.type === analysisTypeNegative ? 'border-red-400' : analysis.type === analysisTypePositive ? 'border-blue-400' : 'border-gray-400'} rounded-lg hover:bg-gray-100 hover:shadow`}
+        onClick={setSelected}
+      >
         <p>{analysis.results}</p>
-      </div>
+      </button>
     </div>
   );
 };

@@ -1,22 +1,38 @@
 import {AnalysisStudentAssignmentsDetails, Student} from '../../types';
 import {GraphData} from '../../types';
 import LineGraph from '../Graphs/LineGraph/LineGraph';
+import {useEffect, useRef, useState} from 'react';
 
 type StudentTeamVisualProps = {
   student: Student,
   graphData: GraphData,
-  analysisData?: AnalysisStudentAssignmentsDetails
+  analysisData?: AnalysisStudentAssignmentsDetails,
+  selected: boolean
 }
 
-const StudentTeamVisual = ({student, graphData, analysisData}: StudentTeamVisualProps) => {
+const StudentTeamVisual = ({student, graphData, analysisData, selected}: StudentTeamVisualProps) => {
+  const containerRef = useRef<null | HTMLLIElement>(null);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  
+  useEffect(() => {
+    if (!selected) {
+      setHasScrolled(false);
+      return;
+    }
+    
+    if (!hasScrolled) {
+      window.scrollTo({
+        behavior: 'smooth',
+        top: (containerRef.current?.offsetTop ?? 0) - window.innerHeight / 2 + (containerRef.current?.offsetHeight ?? 0) / 2
+      });
+      setHasScrolled(true);
+    }
+  }, [selected]);
+  
   return (
-    <li className={'h-40 relative border border-gray-400 rounded-lg overflow-hidden'}>
+    <li ref={containerRef} className={`h-40 relative border ${selected ? 'border-2 border-blue-500 shadow-lg' : 'border-gray-400'} rounded-lg overflow-hidden`}>
       <h3 className={'absolute top-3 left-3 text-lg'}>{student.name}</h3>
       <p className={'absolute left-3 bottom-3 text-2xl font-semibold'}>{analysisData?.averageGrade.toFixed(1)}%</p>
-      {/*{analysisData?.details.map((analysisDetail, index) =>*/}
-      {/*  analysisDetail.type !== 'neutral' &&*/}
-      {/*  <p key={`${student.id}-analysis-${index}`}>{analysisDetail.results}</p>*/}
-      {/*)}*/}
       <LineGraph
         data={graphData}
         displayTooltip={'none'}

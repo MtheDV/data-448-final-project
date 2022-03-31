@@ -3,5 +3,5 @@ import TeamContainer from './TeamContainer';
 import {mockTeams} from '../../api/mocks';
 
 test('renders', () => {
-  render(<TeamContainer team={mockTeams[0]}/>);
+  render(<TeamContainer team={mockTeams[0]} selected={false}/>);
 });

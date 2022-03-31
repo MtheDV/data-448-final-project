@@ -36,6 +36,7 @@ const TeamSet = () => {
   const teamsGraphData = useMemo<GraphData>(() => prepareTeamSetGraphData(teams ?? [], assignments ?? []), [teams, assignments]);
   
   const [analyticsFilterType, setAnalyticsFilterType] = useState<'all' | AnalysisType>('all');
+  const [selectedTeamFromAnalysis, setSelectedTeamFromAnalysis] = useState<number | undefined>(undefined);
   
   return (
     <>
@@ -75,6 +76,7 @@ const TeamSet = () => {
                     key={`team-${team.id}`}
                     team={team}
                     teamAnalysis={teamsAnalyses.find(teamsAnalysis => teamsAnalysis.teamId === team.id)}
+                    selected={selectedTeamFromAnalysis === team.id}
                   />
                 )}
               </ul>
@@ -142,6 +144,7 @@ const TeamSet = () => {
               key={`analysis-${teamAnalysis.teamId}-${index}`}
               analysis={teamAnalysis}
               team={teams?.find(team => team.id === teamAnalysis.teamId)}
+              setSelectedTeamFromAnalysis={setSelectedTeamFromAnalysis}
             />
           )}
         </div>
