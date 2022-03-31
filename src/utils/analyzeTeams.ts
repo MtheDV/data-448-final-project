@@ -102,7 +102,7 @@ const analyzeStudentsAssignment = (studentAnalyses: Array<AnalysisStudentAssignm
       results = `Performed ${difference.toFixed(1)}% ${type === analysisTypePositive ? 'better' : 'worse'} in ${assignment.name}${assignment.optional ? ' (Optional)' : ''}. (Common: ${mostCommon.toFixed(1)}%, Theirs: ${grade.toFixed(1)}%)`;
     }
     
-    if (!assignment.optional || submission.grade > 0) {
+    if (!assignment.optional) {
       const average = submission.grade / assignment.grade * 100;
       averageGrade += average;
       ++totalSubmissionsAnalyzed;

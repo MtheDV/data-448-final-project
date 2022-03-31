@@ -33,7 +33,7 @@ const TeamContainer = ({team, selected}: TeamContainerProps) => {
         <div className={`relative h-40 border ${selected ? 'border-2 border-blue-500 shadow-lg' : 'border-gray-400'} rounded-lg bg-white hover:bg-gray-100 hover:shadow overflow-hidden`}>
           <h3 className={'absolute top-3 left-3 text-lg'}>{team.name}</h3>
           <div className={'absolute bottom-0 left-0 p-3 flex flex-wrap flex-wrap-reverse gap-1'}>
-            {team.enrollments.map(enrollment =>
+            {team.enrollments.slice(0, 6).map(enrollment =>
               <div key={`team-${enrollment.id}`} className={'w-10 h-10 rounded-full bg-gray-300'}>
               </div>
             )}

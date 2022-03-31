@@ -17,25 +17,25 @@ export const prepareTeamSetGraphData = (teams: Array<Team>, assignments: Array<A
   teams.forEach(team => {
     const studentIds = team.enrollments.map(enrollment => enrollment.studentId);
     const teamData: Array<DataType> = [];
-  
+    
     assignments.forEach(assignment => {
-      let teamAverageGrade = 0;
-      let teamSubmissions = 0;
-      assignment.submissions.forEach(submission => {
-        if (studentIds.includes(submission.studentId)) {
-          if (!assignment.optional || submission.grade > 0) {
+      if (!assignment.optional) {
+        let teamAverageGrade = 0;
+        let teamSubmissions = 0;
+        assignment.submissions.forEach(submission => {
+          if (studentIds.includes(submission.studentId)) {
             teamAverageGrade += submission.grade / assignment.grade * 100;
             ++teamSubmissions;
           }
+        });
+        if (teamSubmissions > 1) {
+          teamAverageGrade /= teamSubmissions;
         }
-      });
-      if (teamSubmissions > 1) {
-        teamAverageGrade /= teamSubmissions;
+        teamData.push({
+          x: assignment.name,
+          y: teamAverageGrade
+        });
       }
-      teamData.push({
-        x: assignment.name,
-        y: teamAverageGrade
-      });
     });
     
     data.push({
@@ -53,23 +53,23 @@ export const prepareTeamGraphSeries = (assignments: Array<Assignment>, students:
     const studentData: Array<DataType> = [];
     
     assignments.forEach(assignment => {
-      let studentAverageGrade = 0;
-      let studentSubmissions = 0;
-      assignment.submissions.forEach(submission => {
-        if (submission.studentId === student.id) {
-          if (!assignment.optional || submission.grade > 0) {
+      if (!assignment.optional) {
+        let studentAverageGrade = 0;
+        let studentSubmissions = 0;
+        assignment.submissions.forEach(submission => {
+          if (submission.studentId === student.id) {
             studentAverageGrade += submission.grade / assignment.grade * 100;
             ++studentSubmissions;
           }
+        });
+        if (studentSubmissions > 1) {
+          studentAverageGrade /= studentSubmissions;
         }
-      });
-      if (studentSubmissions > 1) {
-        studentAverageGrade /= studentSubmissions;
+        studentData.push({
+          x: assignment.name,
+          y: studentAverageGrade
+        });
       }
-      studentData.push({
-        x: assignment.name,
-        y: studentAverageGrade
-      });
     });
     
     data.push({
@@ -85,8 +85,10 @@ export const getAverageAssignmentGrade = (assignment: Assignment): number => {
   let average = 0;
   let totalSubmissions = 0;
   assignment.submissions.forEach(submission => {
-    totalSubmissions += 1;
-    average += submission.grade / assignment.grade * 100;
+    if (!assignment.optional) {
+      totalSubmissions += 1;
+      average += submission.grade / assignment.grade * 100;
+    }
   });
   average /= totalSubmissions;
   return average;

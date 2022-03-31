@@ -56,7 +56,7 @@ const TeamSet = () => {
               <h2 className={'text-xl font-semibold my-5'}>Team Performances</h2>
               <div id={'teams-graph-display'} className={'h-72 p-4 border border-gray-400 rounded-lg'}>
                 <LineGraph
-                  data={teamsGraphData}
+                  data={teamsGraphData.filter(data => teams?.filter(team => teamsAnalyses.filter(analysis => analyticsFilterType === 'all' || analysis.type === analyticsFilterType).find(analysis => analysis.teamId === team.id)).find(team => team.name === data.id))}
                   displayTooltip={'number'}
                   lineProps={{
                     margin: {top: 10, bottom: 10, right: 10, left: 30},
@@ -71,7 +71,7 @@ const TeamSet = () => {
             <>
               <h2 className={'text-xl font-semibold my-5'}>Teams</h2>
               <ul className={'grid grid-cols-auto-flow-grid grid-flow-row-dense gap-4'}>
-                {teams.map(team =>
+                {teams.filter(team => teamsAnalyses.filter(analysis => analyticsFilterType === 'all' || analysis.type === analyticsFilterType).find(analysis => analysis.teamId === team.id)).map(team =>
                   <TeamContainer
                     key={`team-${team.id}`}
                     team={team}
