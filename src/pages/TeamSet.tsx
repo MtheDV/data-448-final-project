@@ -9,7 +9,7 @@ import {prepareTeamSetGraphData} from '../utils';
 import LineGraph from '../components/Graphs/LineGraph/LineGraph';
 import TeamAnalysisDetails from '../components/TeamAnalysisDetails/TeamAnalysisDetails';
 import {analysisTypes} from '../constants';
-import Select from '../components/Select/Select';
+import {Select} from '../components';
 
 const TeamSet = () => {
   const {teamSetId} = useParams();
