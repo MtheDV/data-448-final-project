@@ -45,7 +45,7 @@ const TeamSet = () => {
           .find(analysis => analysis.teamId === team.id))
         .find(team => team.name === data.id)
     );
-  }, [analyticsFilterType]);
+  }, [analyticsFilterType, teams, teamsAnalyses, teamsGraphData]);
   
   return (
     <>
