@@ -53,7 +53,8 @@ const Team = () => {
         <div className={'pr-4 flex-grow'}>
           {isErrorTeam && <p>Error! {teamError && 'status' in teamError && teamError.data}</p>}
           {isErrorStudents && <p>Error! {studentsError && 'status' in studentsError && studentsError.data}</p>}
-          {isErrorAssignments && <p>Error! {assignmentsError && 'status' in assignmentsError && assignmentsError.data}</p>}
+          {isErrorAssignments &&
+            <p>Error! {assignmentsError && 'status' in assignmentsError && assignmentsError.data}</p>}
           {students && filteredAssignments &&
             <>
               <h2 className={'text-xl font-semibold my-5'}>Assignment Performance</h2>
@@ -78,16 +79,18 @@ const Team = () => {
           }
           {(!students || students.length <= 0) && <p>Looks like there are no students</p>}
         </div>
-        <div className={'pl-4 w-64 border-l border-l-gray-200'}>
+        <div className={'pl-4 w-64 border-l border-l-gray-200 max-h-screen sticky top-0 overflow-y-scroll'}>
           <h2 className={'text-xl font-semibold my-5'}>Analysis Details</h2>
-          {studentsAnalyses.map((studentAnalysis, index) =>
-            <StudentAnalysisDetails
-              key={`analysis-${studentAnalysis.studentId}-${index}`}
-              analysis={studentAnalysis}
-              student={students?.find(student => student.id === studentAnalysis.studentId)}
-              setSelectedStudentFromAnalysis={setSelectedStudentFromAnalysis}
-            />
-          )}
+          <div className={'flex flex-col gap-3 mt-4'}>
+            {studentsAnalyses.map((studentAnalysis, index) =>
+              <StudentAnalysisDetails
+                key={`analysis-${studentAnalysis.studentId}-${index}`}
+                analysis={studentAnalysis}
+                student={students?.find(student => student.id === studentAnalysis.studentId)}
+                setSelectedStudentFromAnalysis={setSelectedStudentFromAnalysis}
+              />
+            )}
+          </div>
         </div>
       </div>
     </>

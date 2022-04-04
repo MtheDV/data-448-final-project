@@ -93,7 +93,7 @@ const TeamSet = () => {
           }
           {(!teams || teams.length <= 0) && <p>Looks like there are no teams</p>}
         </div>
-        <div className={'pl-4 w-64 border-l border-l-gray-200'}>
+        <div className={'pl-4 pb-4 w-64 border-l border-l-gray-200 max-h-screen sticky top-0 overflow-y-scroll'}>
           <h2 className={'text-xl font-semibold my-5'}>Analysis Details</h2>
           <label>
             <span className={'text-sm'}>Filter</span>
@@ -104,15 +104,17 @@ const TeamSet = () => {
               onChange={setAnalyticsFilterType}
             />
           </label>
-          {teamsAnalyses.map((teamAnalysis, index) =>
-            (analyticsFilterType === 'all' || teamAnalysis.type === analyticsFilterType) &&
-            <TeamAnalysisDetails
-              key={`analysis-${teamAnalysis.teamId}-${index}`}
-              analysis={teamAnalysis}
-              team={teams?.find(team => team.id === teamAnalysis.teamId)}
-              setSelectedTeamFromAnalysis={setSelectedTeamFromAnalysis}
-            />
-          )}
+          <div className={'flex flex-col gap-3 mt-4'}>
+            {teamsAnalyses.map((teamAnalysis, index) =>
+              (analyticsFilterType === 'all' || teamAnalysis.type === analyticsFilterType) &&
+              <TeamAnalysisDetails
+                key={`analysis-${teamAnalysis.teamId}-${index}`}
+                analysis={teamAnalysis}
+                team={teams?.find(team => team.id === teamAnalysis.teamId)}
+                setSelectedTeamFromAnalysis={setSelectedTeamFromAnalysis}
+              />
+            )}
+          </div>
         </div>
       </div>
     </>

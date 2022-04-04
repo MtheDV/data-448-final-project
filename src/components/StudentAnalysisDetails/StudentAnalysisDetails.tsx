@@ -17,7 +17,7 @@ const StudentAnalysisDetails = ({analysis, student, setSelectedStudentFromAnalys
     <div>
       {analysis.details.filter(detail => detail.type !== analysisTypeNeutral).length > 0 &&
         <>
-          <h3 className={'text-lg font-semibold my-4'}>{student?.name}</h3>
+          <h3 className={'text-lg font-semibold mb-4'}>{student?.name}</h3>
           <ul className={'flex flex-col gap-4'}>
             {analysis.details.filter(detail => detail.type !== analysisTypeNeutral).map((detail, index) =>
               <li key={`analysis-details-${index}`}>
