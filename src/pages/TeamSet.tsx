@@ -55,7 +55,7 @@ const TeamSet = () => {
       </div>
       <hr/>
       <div className={'flex'}>
-        <div className={'pr-4 flex-grow'}>
+        <div className={'pr-4 flex-1'}>
           {isErrorTeamSet && <p>Error! {teamSetError && 'status' in teamSetError && teamSetError.data}</p>}
           {isErrorTeams && <p>Error! {teamsError && 'status' in teamsError && teamsError.data}</p>}
           {isErrorAssignments &&
