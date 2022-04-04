@@ -17,7 +17,7 @@ const TeamAnalysisDetails = ({analysis, team, setSelectedTeamFromAnalysis}: Anal
     <div>
       <h3 className={'text-lg font-semibold my-2'}>{team?.name}</h3>
       <button
-        className={`text-left p-3 border ${analysis.type === analysisTypeNegative ? 'border-red-400' : analysis.type === analysisTypePositive ? 'border-blue-400' : 'border-gray-400'} rounded-lg hover:bg-gray-100 hover:shadow`}
+        className={`text-left p-3 border ${analysis.type === analysisTypeNegative ? 'border-red-400' : analysis.type === analysisTypePositive ? 'border-green-600' : 'border-gray-400'} rounded-lg hover:bg-gray-100 hover:shadow`}
         onClick={setSelected}
       >
         <p>{analysis.results}</p>

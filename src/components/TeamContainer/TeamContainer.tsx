@@ -1,6 +1,7 @@
 import {AnalysisTeamAssignmentsDetails, Team} from '../../types';
 import {Link} from 'react-router-dom';
 import {useEffect, useRef, useState} from 'react';
+import {analysisTypeNegative, analysisTypePositive} from '../../constants';
 
 type TeamContainerProps = {
   team: Team
@@ -8,7 +9,7 @@ type TeamContainerProps = {
   selected: boolean
 }
 
-const TeamContainer = ({team, selected}: TeamContainerProps) => {
+const TeamContainer = ({team, teamAnalysis, selected}: TeamContainerProps) => {
   const containerRef = useRef<null | HTMLLIElement>(null);
   const [hasScrolled, setHasScrolled] = useState(false);
   
@@ -30,11 +31,11 @@ const TeamContainer = ({team, selected}: TeamContainerProps) => {
   return (
     <li ref={containerRef}>
       <Link to={`teams/${team.id}`}>
-        <div className={`relative h-40 border ${selected ? 'border-2 border-blue-500 shadow-lg' : 'border-gray-400'} rounded-lg bg-white hover:bg-gray-100 hover:shadow overflow-hidden`}>
+        <div className={`relative h-40 border ${selected ? 'border-2 border-blue-500 shadow-lg' : (teamAnalysis?.type === analysisTypeNegative ? 'border-red-400' : teamAnalysis?.type === analysisTypePositive ? 'border-green-600' : 'border-gray-400')} rounded-lg bg-white hover:bg-gray-100 hover:shadow overflow-hidden`}>
           <h3 className={'absolute top-3 left-3 text-lg'}>{team.name}</h3>
           <div className={'absolute bottom-0 left-0 p-3 flex flex-wrap flex-wrap-reverse gap-1'}>
-            {team.enrollments.slice(0, 6).map(enrollment =>
-              <div key={`team-${enrollment.id}`} className={'w-10 h-10 rounded-full bg-gray-300'}>
+            {teamAnalysis?.details.map(studentAnalysis =>
+              <div key={`team-${studentAnalysis.studentId}`} className={`w-10 h-10 rounded-full bg-gray-300 border-2 ${studentAnalysis.overallType === analysisTypeNegative ? 'border-red-400' : studentAnalysis.overallType === analysisTypePositive ? 'border-green-600' : 'border-gray-400'}`}>
               </div>
             )}
           </div>

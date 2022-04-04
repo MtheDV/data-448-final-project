@@ -10,6 +10,8 @@ export type AnalysisTeamAssignmentsDetails = {
 export type AnalysisStudentAssignmentsDetails = {
   studentId: number,
   averageGrade: number,
+  overallType: AnalysisType,
+  overallScore: number,
   details: Array<{
     assignmentId: number,
     optional?: boolean,

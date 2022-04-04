@@ -49,6 +49,8 @@ export const analyzeStudents = (studentIds: Array<number>, assignments: Array<As
     return {
       studentId,
       averageGrade: 0,
+      overallType: analysisTypeNeutral,
+      overallScore: 0,
       details: []
     };
   });
@@ -70,6 +72,7 @@ export const analyzeStudents = (studentIds: Array<number>, assignments: Array<As
   
   studentAnalyses.forEach(studentAnalysis => {
     studentAnalysis.averageGrade /= studentAnalysis.details.filter(detail => !detail.optional).length;
+    studentAnalysis.overallType = studentAnalysis.overallScore < 0 ? analysisTypeNegative : studentAnalysis.overallScore > 0 ? analysisTypePositive : analysisTypeNeutral;
   });
   
   return {
@@ -95,7 +98,7 @@ const analyzeStudentsAssignment = (studentAnalyses: Array<AnalysisStudentAssignm
     if (submission.grade > mostCommonGrade) type = analysisTypePositive;
     
     let results = '';
-    if (type !== 'neutral') {
+    if (type !== analysisTypeNeutral) {
       const difference = Math.abs(mostCommonGrade - submission.grade) / assignment.grade * 100;
       const mostCommon = mostCommonGrade / assignment.grade * 100;
       const grade = submission.grade / assignment.grade * 100;
@@ -107,6 +110,8 @@ const analyzeStudentsAssignment = (studentAnalyses: Array<AnalysisStudentAssignm
       averageGrade += average;
       ++totalSubmissionsAnalyzed;
       studentAnalysis.averageGrade += average;
+      if (type === analysisTypePositive) ++studentAnalysis.overallScore;
+      if (type === analysisTypeNegative) --studentAnalysis.overallScore;
       studentAnalysis.details.push({
         optional: assignment.optional,
         assignmentId: assignment.id,

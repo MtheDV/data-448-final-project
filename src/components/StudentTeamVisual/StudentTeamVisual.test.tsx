@@ -4,6 +4,7 @@ import {mockStudents} from '../../api/mocks';
 import {screen} from '@testing-library/react';
 import {filterAssignmentsForStudent, getAverageAssignmentsGrade} from '../../utils';
 import {getAssignments} from '../../api/mocks/utils';
+import {analysisTypeNeutral} from '../../constants';
 
 describe('Student Team Visual Component', () => {
   const mockStudent = mockStudents[0];
@@ -12,7 +13,20 @@ describe('Student Team Visual Component', () => {
   const averageAssignmentsGrade = getAverageAssignmentsGrade(studentAssignments);
   
   beforeEach(() => {
-    render(<StudentTeamVisual student={mockStudent} analysisData={{studentId: mockStudent.id, averageGrade: averageAssignmentsGrade, details: []}} graphData={[]} selected={false}/>);
+    render(
+      <StudentTeamVisual
+        student={mockStudent}
+        analysisData={{
+          studentId: mockStudent.id,
+          averageGrade: averageAssignmentsGrade,
+          overallType: analysisTypeNeutral,
+          overallScore: 0,
+          details: []
+        }}
+        graphData={[]}
+        selected={false}
+      />
+    );
   });
   
   it('should render with level 3 name', () => {

@@ -22,7 +22,7 @@ const StudentAnalysisDetails = ({analysis, student, setSelectedStudentFromAnalys
             {analysis.details.filter(detail => detail.type !== analysisTypeNeutral).map((detail, index) =>
               <li key={`analysis-details-${index}`}>
                 <button
-                  className={`text-left p-3 border ${detail.type === analysisTypeNegative ? 'border-red-400' : detail.type === analysisTypePositive ? 'border-blue-400' : 'border-gray-400'} rounded-lg hover:bg-gray-100 hover:shadow`}
+                  className={`text-left p-3 border ${detail.type === analysisTypeNegative ? 'border-red-400' : detail.type === analysisTypePositive ? 'border-green-600' : 'border-gray-400'} rounded-lg hover:bg-gray-100 hover:shadow`}
                   onClick={setSelected}
                 >
                   <p>{detail.results}</p>
