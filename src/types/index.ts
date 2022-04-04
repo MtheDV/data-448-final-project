@@ -5,7 +5,11 @@ import {Submission} from './grades';
 import {TeamEnrollment} from './enrollments';
 import {DefaultState} from './sliceStates';
 import {Course} from './course';
-import {DataType, Data, GraphData} from './graphs';
+import {
+  LineDataType,
+  LineData,
+  LineGraphData
+} from './graphs';
 import {
   AnalysisStudentAssignmentsDetails,
   AnalysisTeamAssignmentsDetails,
@@ -21,9 +25,9 @@ export type {
   Submission,
   DefaultState,
   Course,
-  DataType,
-  Data,
-  GraphData,
+  LineDataType,
+  LineData,
+  LineGraphData,
   AnalysisStudentAssignmentsDetails,
   AnalysisTeamAssignmentsDetails,
   AnalysisType

@@ -1,8 +1,8 @@
-import {GraphData} from '../../types';
+import {LineGraphData} from '../../types';
 import LineGraph from '../Graphs/LineGraph/LineGraph';
 
 type TeamVisualProps = {
-  graphData: GraphData,
+  graphData: LineGraphData,
 }
 
 const TeamVisual = ({graphData}: TeamVisualProps) => {

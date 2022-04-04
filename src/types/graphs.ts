@@ -1,12 +1,12 @@
-export type GraphData = Array<Data>;
-
-export type DataType = {
+export type LineDataType = {
   x: number | string,
   y: number | string
 }
 
-export type Data = {
+export type LineData = {
   id: string,
   color?: string,
-  data: Array<DataType>
+  data: Array<LineDataType>
 };
+
+export type LineGraphData = Array<LineData>;

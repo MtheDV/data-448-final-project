@@ -4,7 +4,7 @@ import {TeamContainer} from '../components';
 import Spinner from '../components/Spinner/Spinner';
 import {useMemo, useState} from 'react';
 import {analyzeTeams} from '../utils/analyzeTeams';
-import {AnalysisType, GraphData} from '../types';
+import {AnalysisType, LineGraphData} from '../types';
 import {prepareTeamSetGraphData} from '../utils';
 import LineGraph from '../components/Graphs/LineGraph/LineGraph';
 import TeamAnalysisDetails from '../components/TeamAnalysisDetails/TeamAnalysisDetails';
@@ -32,10 +32,20 @@ const TeamSet = () => {
   } = useGetAssignmentsQuery(true);
   
   const teamsAnalyses = useMemo(() => analyzeTeams(teams ?? [], assignments ?? []), [teams, assignments]);
-  const teamsGraphData = useMemo<GraphData>(() => prepareTeamSetGraphData(teams ?? [], assignments ?? []), [teams, assignments]);
+  const teamsGraphData = useMemo<LineGraphData>(() => prepareTeamSetGraphData(teams ?? [], assignments ?? []), [teams, assignments]);
   
   const [analyticsFilterType, setAnalyticsFilterType] = useState<'all' | AnalysisType>('all');
   const [selectedTeamFromAnalysis, setSelectedTeamFromAnalysis] = useState<number | undefined>(undefined);
+  
+  const filteredGraphData = useMemo<LineGraphData>(() => {
+    return teamsGraphData.filter(data =>
+      teams?.filter(team =>
+        teamsAnalyses.filter(analysis =>
+          analyticsFilterType === 'all' || analysis.type === analyticsFilterType)
+          .find(analysis => analysis.teamId === team.id))
+        .find(team => team.name === data.id)
+    );
+  }, [analyticsFilterType]);
   
   return (
     <>
@@ -55,7 +65,7 @@ const TeamSet = () => {
               <h2 className={'text-xl font-semibold my-5'}>Team Performances</h2>
               <div id={'teams-graph-display'} className={'h-72 p-4 border border-gray-400 rounded-lg'}>
                 <LineGraph
-                  data={teamsGraphData.filter(data => teams?.filter(team => teamsAnalyses.filter(analysis => analyticsFilterType === 'all' || analysis.type === analyticsFilterType).find(analysis => analysis.teamId === team.id)).find(team => team.name === data.id))}
+                  data={filteredGraphData}
                   displayTooltip={'number'}
                   lineProps={{
                     margin: {top: 10, bottom: 10, right: 10, left: 30},
@@ -87,7 +97,12 @@ const TeamSet = () => {
           <h2 className={'text-xl font-semibold my-5'}>Analysis Details</h2>
           <label>
             <span className={'text-sm'}>Filter</span>
-            <Select value={analyticsFilterType} noneValue={'all'} values={analysisTypes} onChange={setAnalyticsFilterType}/>
+            <Select<typeof analyticsFilterType>
+              value={analyticsFilterType}
+              noneValue={'all'}
+              values={analysisTypes}
+              onChange={setAnalyticsFilterType}
+            />
           </label>
           {teamsAnalyses.map((teamAnalysis, index) =>
             (analyticsFilterType === 'all' || teamAnalysis.type === analyticsFilterType) &&

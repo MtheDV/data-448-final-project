@@ -1,5 +1,4 @@
-import {Assignment, Student, Team} from '../types';
-import {DataType, GraphData} from '../types';
+import {Assignment, Student, Team, LineDataType, LineGraphData} from '../types';
 
 export const filterAssignmentsForStudent = (studentId: number, assignments: Array<Assignment>): Array<Assignment> => {
   const filteredAssignments: Array<Assignment> = [];
@@ -12,11 +11,11 @@ export const filterAssignmentsForStudent = (studentId: number, assignments: Arra
   return filteredAssignments;
 };
 
-export const prepareTeamSetGraphData = (teams: Array<Team>, assignments: Array<Assignment>): GraphData => {
-  const data: GraphData = [];
+export const prepareTeamSetGraphData = (teams: Array<Team>, assignments: Array<Assignment>): LineGraphData => {
+  const data: LineGraphData = [];
   teams.forEach(team => {
     const studentIds = team.enrollments.map(enrollment => enrollment.studentId);
-    const teamData: Array<DataType> = [];
+    const teamData: Array<LineDataType> = [];
     
     assignments.forEach(assignment => {
       if (!assignment.optional) {
@@ -47,10 +46,10 @@ export const prepareTeamSetGraphData = (teams: Array<Team>, assignments: Array<A
   return data;
 };
 
-export const prepareTeamGraphSeries = (assignments: Array<Assignment>, students: Array<Student>): GraphData => {
-  const data: GraphData = [];
+export const prepareTeamGraphSeries = (assignments: Array<Assignment>, students: Array<Student>): LineGraphData => {
+  const data: LineGraphData = [];
   students.forEach(student => {
-    const studentData: Array<DataType> = [];
+    const studentData: Array<LineDataType> = [];
     
     assignments.forEach(assignment => {
       if (!assignment.optional) {

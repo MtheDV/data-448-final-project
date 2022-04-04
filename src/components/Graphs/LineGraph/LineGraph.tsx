@@ -1,9 +1,9 @@
 import {LineProps, ResponsiveLine} from '@nivo/line';
-import {GraphData} from '../../../types';
+import {LineGraphData} from '../../../types';
 import Tooltip from '../Tooltip/Tooltip';
 
 type LineGraphProps = {
-  data: GraphData,
+  data: LineGraphData,
   displayTooltip?: 'number' | 'string' | 'none'
   lineProps?: Partial<LineProps>
 }

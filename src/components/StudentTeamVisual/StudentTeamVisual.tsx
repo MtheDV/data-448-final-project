@@ -1,11 +1,11 @@
 import {AnalysisStudentAssignmentsDetails, Student} from '../../types';
-import {GraphData} from '../../types';
+import {LineGraphData} from '../../types';
 import LineGraph from '../Graphs/LineGraph/LineGraph';
 import {useEffect, useRef, useState} from 'react';
 
 type StudentTeamVisualProps = {
   student: Student,
-  graphData: GraphData,
+  graphData: LineGraphData,
   analysisData?: AnalysisStudentAssignmentsDetails,
   selected: boolean
 }

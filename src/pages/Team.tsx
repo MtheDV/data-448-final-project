@@ -5,7 +5,7 @@ import {StudentTeamVisual} from '../components';
 import TeamVisual from '../components/TeamVisual/TeamVisual';
 import {useMemo, useState} from 'react';
 import {analyzeStudents} from '../utils/analyzeTeams';
-import {AnalysisStudentAssignmentsDetails, GraphData} from '../types';
+import {AnalysisStudentAssignmentsDetails, LineGraphData} from '../types';
 import {prepareTeamGraphSeries} from '../utils';
 import StudentAnalysisDetails from '../components/StudentAnalysisDetails/StudentAnalysisDetails';
 
@@ -38,7 +38,7 @@ const Team = () => {
       };
     }), [assignments, students]);
   const {analyses: studentsAnalyses} = useMemo<{ analyses: Array<AnalysisStudentAssignmentsDetails>, average: number }>(() => analyzeStudents(students?.map(student => student.id) ?? [], filteredAssignments ?? []), [students, assignments]);
-  const teamGraphData = useMemo<GraphData>(() => prepareTeamGraphSeries(assignments ?? [], students ?? []), [assignments, students]);
+  const teamGraphData = useMemo<LineGraphData>(() => prepareTeamGraphSeries(assignments ?? [], students ?? []), [assignments, students]);
   
   const [selectedStudentFromAnalysis, setSelectedStudentFromAnalysis] = useState<number | undefined>(undefined);
   
