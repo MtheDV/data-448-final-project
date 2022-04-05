@@ -30,7 +30,7 @@ const StudentTeamVisual = ({student, graphData, analysisData, selected}: Student
   }, [selected]);
   
   return (
-    <li ref={containerRef} className={`h-40 relative border ${selected ? 'border-2 border-blue-500 shadow-lg' : 'border-gray-400'} rounded-lg overflow-hidden`}>
+    <li ref={containerRef} className={`h-40 relative border-2 ${selected ? 'border-blue-500 shadow-lg' : 'border-gray-400'} rounded-lg overflow-hidden`}>
       <h3 className={'absolute top-3 left-3 text-lg'}>{student.name}</h3>
       <p className={'absolute left-3 bottom-3 text-2xl font-semibold'}>{analysisData?.averageGrade.toFixed(1)}%</p>
       <LineGraph

@@ -86,6 +86,7 @@ const TeamSet = () => {
                     team={team}
                     teamAnalysis={teamsAnalyses.find(teamsAnalysis => teamsAnalysis.teamId === team.id)}
                     selected={selectedTeamFromAnalysis === team.id}
+                    setSelectedTeamFromAnalysis={setSelectedTeamFromAnalysis}
                   />
                 )}
               </ul>
