@@ -1,7 +1,8 @@
-import {LineProps, Line} from '@nivo/line';
+import {Line, LineProps, Point} from '@nivo/line';
 import {LineGraphData} from '../../../types';
 import Tooltip from '../Tooltip/Tooltip';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import {useCallback} from 'react';
 
 type LineGraphProps = {
   data: LineGraphData,
@@ -10,6 +11,13 @@ type LineGraphProps = {
 }
 
 const LineGraph = ({data, displayTooltip, lineProps}: LineGraphProps) => {
+  const tooltipPointData = useCallback((point: Point) => {
+    return data.filter(dataPoints => {
+      const dataFiltered = dataPoints.data.filter(dataType => dataType.x === point.data.xFormatted && dataType.y === Number(point.data.yFormatted));
+      return dataFiltered.length > 0;
+    });
+  }, [data]);
+  
   return (
     <AutoSizer>
       {({width, height}) => (
@@ -32,17 +40,21 @@ const LineGraph = ({data, displayTooltip, lineProps}: LineGraphProps) => {
             return (
               <Tooltip>
                 <p className={'text-sm'}>
-                  {point.data.xFormatted}
+                  {point.data.xFormatted}:&nbsp;
+                  <span className={'font-bold'}>
+                    {displayTooltip === 'number' ? Number(point.data.yFormatted).toFixed(1) : point.data.yFormatted}%
+                  </span>
                 </p>
                 <hr className={'my-1'}/>
-                <div className={'flex items-center'}>
-                  <div style={{backgroundColor: point.color}} className={'w-3 h-3 rounded mr-1'}/>
-                  <p>
-                    {point.serieId}:&nbsp;
-                    <span className={'font-bold'}>
-                      {displayTooltip === 'number' ? Number(point.data.yFormatted).toFixed(1) : point.data.yFormatted}%
-                    </span>
-                  </p>
+                <div className={'flex flex-col flex-wrap max-h-52'}>
+                  {tooltipPointData(point).map(dataPoints =>
+                    <div key={`point-${dataPoints.id}`} className={'flex items-center mr-2'}>
+                      <div style={{backgroundColor: point.color}} className={'w-3 h-3 rounded mr-1'}/>
+                      <p>
+                        {dataPoints.id}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </Tooltip>
             );
