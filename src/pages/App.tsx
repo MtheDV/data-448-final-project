@@ -3,7 +3,7 @@ import {Footer, SidebarNav} from '../components';
 
 function App() {
   return (
-    <div className={'flex flex-row h-full'}>
+    <div className={'flex flex-col md:flex-row h-full'}>
       <SidebarNav/>
       <div className={'flex flex-col w-full'}>
         <main className={'flex-grow p-5'}>

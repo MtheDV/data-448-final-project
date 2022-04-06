@@ -23,13 +23,13 @@ const SidebarNav = () => {
   }, []);
   
   return (
-    <aside className={'w-64 h-screen border-r border-r-gray-200 p-3 sticky top-0'}>
+    <aside className={'flex flex-row items-center w-screen bg-white z-50 p-3 sticky top-0 border-b border-b-gray-200 md:flex-col md:items-start md:w-64 md:h-screen md:border-b-0 md:border-r md:border-r-gray-200'}>
       <div className={'flex items-center'}>
         <div className={'w-7 h-7 rounded-full bg-gray-400 mr-3'}/>
         <span className={'text-2xl font-bold'}>Team Viz</span>
       </div>
-      <nav className={'mt-5'}>
-        <ul className={'flex flex-col gap-2'}>
+      <nav className={'ml-auto md:ml-0 md:mt-5'}>
+        <ul className={'flex flex-row md:flex-col gap-2'}>
           <li>
             {CustomNavLink(routes.home, 'Home', <HomeIcon/>)}
           </li>
