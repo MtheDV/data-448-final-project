@@ -79,7 +79,7 @@ const Team = () => {
           }
           {(!students || students.length <= 0) && <p>Looks like there are no students</p>}
         </div>
-        <div className={'pl-4 w-64 border-l border-l-gray-200 max-h-screen sticky top-0 overflow-y-scroll'}>
+        <div className={'px-4 pb-4 w-72 border-l border-l-gray-200 max-h-screen sticky top-0 overflow-y-auto'}>
           <h2 className={'text-xl font-semibold my-5'}>Analysis Details</h2>
           <div className={'flex flex-col gap-3 mt-4'}>
             {studentsAnalyses.map((studentAnalysis, index) =>
