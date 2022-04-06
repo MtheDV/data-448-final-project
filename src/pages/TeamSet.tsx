@@ -54,8 +54,8 @@ const TeamSet = () => {
         <Spinner isLoading={isLoadingTeamSet || isLoadingTeams}/>
       </div>
       <hr/>
-      <div className={'flex'}>
-        <div className={'pr-4 flex-1'}>
+      <div className={'flex flex-col md:flex-row'}>
+        <div className={'md:pr-4 flex-1'}>
           {isErrorTeamSet && <p>Error! {teamSetError && 'status' in teamSetError && teamSetError.data}</p>}
           {isErrorTeams && <p>Error! {teamsError && 'status' in teamsError && teamsError.data}</p>}
           {isErrorAssignments &&
@@ -94,7 +94,7 @@ const TeamSet = () => {
           }
           {(!teams || teams.length <= 0) && <p>Looks like there are no teams</p>}
         </div>
-        <div className={'px-4 pb-4 w-72 border-l border-l-gray-200 max-h-screen sticky top-0 overflow-y-auto'}>
+        <div className={'mt-6 md:mt-0 md:px-4 md:pb-4 w-full md:w-72 border-t border-t-gray-200 md:border-t-0 md:border-l md:border-l-gray-200 md:max-h-screen sticky top-0 overflow-y-auto'}>
           <h2 className={'text-xl font-semibold my-5'}>Analysis Details</h2>
           <label>
             <span className={'text-sm'}>Filter</span>
