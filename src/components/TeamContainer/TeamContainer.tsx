@@ -41,7 +41,7 @@ const TeamContainer = ({team, teamAnalysis, selected, setSelectedTeamFromAnalysi
           <h3 className={'absolute top-3 left-3 text-lg'}>{team.name}</h3>
           <div className={'absolute bottom-0 left-0 p-3 flex flex-wrap flex-wrap-reverse gap-1'}>
             {teamAnalysis?.details.map(studentAnalysis =>
-              <div key={`team-${studentAnalysis.studentId}`} className={`w-10 h-10 rounded-full bg-gray-300 border-2 ${studentAnalysis.overallType === analysisTypeNegative ? 'border-red-400' : studentAnalysis.overallType === analysisTypePositive ? 'border-green-600' : 'border-gray-400'}`}>
+              <div key={`team-${studentAnalysis.studentId}`} className={`w-10 h-10 rounded-full border-2 ${studentAnalysis.overallType === analysisTypeNegative ? 'border-red-400 bg-red-200' : studentAnalysis.overallType === analysisTypePositive ? 'border-green-600 bg-green-300' : 'border-gray-400 bg-gray-300'}`}>
               </div>
             )}
           </div>
