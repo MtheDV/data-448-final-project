@@ -1,6 +1,6 @@
 {
   "name": "data-448-final-project",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@headlessui/react": "^1.5.0",

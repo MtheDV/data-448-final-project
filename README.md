@@ -1,46 +1,176 @@
-# Getting Started with Create React App
+# Team Viz App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A ReactJS based application to visualize student performances within team sets.
 
-## Available Scripts
+## Main Tools Used
 
-In the project directory, you can run:
+1. ReactJS
+2. Typescript
+3. Redux
+4. Redux Toolkit
+5. TailwindCSS
+6. MSW
 
-### `npm start`
+## Requirements
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. NodeJS
+2. Data within the `./src/api/mocks/` folder
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Installing
 
-### `npm test`
+1. Navigate to the project root directory in the console.
+2. To install the required packages for the app run `npm install` in the console.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Running
 
-### `npm run build`
+1. Navigate to the project root directory in the console.
+2. Run the command `npm start` in the console.
+3. React will start running the application within `localhost:3000`, if it's available.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Testing
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Navigate to the project root directory in the console.
+2. Run the command `npm test` in the console.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Building
 
-### `npm run eject`
+1. Navigate to the project root directory in the console.
+2. Run the command `npm build` in the console.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Data
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Using the MSW library, api routes are mocked and can return local data.
+To use your data, place the following JSON files in the `./src/api/mocks/` folder:
+_**These data formats are strict (based on types) and required.**_
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Formatting Data
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+To format your data required for the project, see the [formatting data](./format_data/README.md) subproject
 
-## Learn More
+### JSON File Data Types
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### Assignments [[type]](./src/types/grades.ts)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+File: `assignments.json`
+
+```json
+[
+  {
+    "id": 1,
+    "grade": 8,
+    "name": "Activity 1",
+    "optional": false,
+    "submissions": [
+      {
+        "id": 1,
+        "studentId": 12345,
+        "grade": 5
+      }
+    ]
+  }
+]
+```
+
+#### Courses [[type]](./src/types/course.ts)
+
+File: `courses.json`
+
+*This data can just be manually created*
+
+```json
+[
+  {
+    "id": 1,
+    "assignments": []
+  }
+]
+```
+
+#### Students [[type]](./src/types/students.ts)
+
+File: `students.json`
+
+```json
+[
+  {
+    "id": 1,
+    "name": "John Smith",
+    "studentId": "12345",
+    "enrollments": [
+      {
+        "id": 1,
+        "teamId": 1,
+        "teamSetId": 1,
+        "studentId": 1
+      }
+    ]
+  }
+]
+```
+
+#### Submissions [[type]](./src/types/grades.ts)
+
+File: `submissions.json`
+
+```json
+[
+  {
+    "id": 1,
+    "studentId": 1,
+    "grade": 7
+  }
+]
+```
+
+#### Team Enrollments [[type]](./src/types/enrollments.ts)
+
+File: `teamEnrollments.json`
+
+```json
+[
+  {
+    "id": 1,
+    "teamId": 1,
+    "teamSetId": 1,
+    "studentId": 1
+  }
+]
+```
+
+#### Teams [[type]](./src/types/teams.ts)
+
+File: `teams.json`
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Group 1",
+    "teamSetId": 1,
+    "enrollments": [
+      {
+        "id": 1,
+        "teamId": 1,
+        "teamSetId": 1,
+        "studentId": 1
+      }
+    ]
+  }
+]
+```
+
+#### Team Sets [[type]](./src/types/teams.ts)
+
+File: `teamSets.json`
+
+*This data can just be manually created*
+
+```json
+[
+  {
+    "id": 1,
+    "courseId": 1,
+    "name": "Team Set 1"
+  }
+]
+```

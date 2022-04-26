@@ -118,6 +118,9 @@ const writeData = (jsonOutputFile: string, data: FormattedData) => {
   });
 };
 
+/**
+ * DATA FORMATTING STARTS HERE:
+ */
 (async () => {
   const studentData = await formatData('overall-peers.csv', {
     id: {
